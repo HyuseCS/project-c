@@ -1,11 +1,10 @@
 package com.hyuse.projectc.di
 
 import com.hyuse.projectc.data.repository.AuthRepositoryImpl
+import com.hyuse.projectc.data.repository.ProfileRepositoryImpl
 import com.hyuse.projectc.domain.repository.AuthRepository
-import com.hyuse.projectc.domain.usecase.GetCurrentUserUseCase
-import com.hyuse.projectc.domain.usecase.LoginUseCase
-import com.hyuse.projectc.domain.usecase.LogoutUseCase
-import com.hyuse.projectc.domain.usecase.SignUpUseCase
+import com.hyuse.projectc.domain.repository.ProfileRepository
+import com.hyuse.projectc.domain.usecase.*
 import org.koin.dsl.module
 
 /**
@@ -13,12 +12,17 @@ import org.koin.dsl.module
  * Provides repositories and use cases available to all platforms.
  */
 val sharedModule = module {
-    // Repository — singleton since FirebaseAuth instance should be shared
+    // Repositories — singletons
     single<AuthRepository> { AuthRepositoryImpl() }
+    single<ProfileRepository> { ProfileRepositoryImpl() }
 
-    // Use cases — factory (new instance each time, they're lightweight)
+    // Use cases — factory
     factory { SignUpUseCase(get()) }
     factory { LoginUseCase(get()) }
     factory { LogoutUseCase(get()) }
     factory { GetCurrentUserUseCase(get()) }
+
+    factory { GetProfileUseCase(get()) }
+    factory { SaveProfileUseCase(get()) }
+    factory { ObserveProfileUseCase(get()) }
 }

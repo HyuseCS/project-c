@@ -21,3 +21,8 @@ node_modules/
 # Firebase config (contains API keys)
 **/google-services.json
 **/GoogleService-Info.plist
+
+# Memory
+memory.md
+phase2_plan.md
+GEMINI.md

@@ -1,9 +1,14 @@
 package com.hyuse.projectc.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +16,11 @@ import com.hyuse.projectc.ui.auth.AuthState
 import com.hyuse.projectc.ui.auth.AuthViewModel
 import com.hyuse.projectc.ui.auth.LoginScreen
 import com.hyuse.projectc.ui.auth.SignUpScreen
+import com.hyuse.projectc.ui.home.HomeState
+import com.hyuse.projectc.ui.home.HomeViewModel
 import com.hyuse.projectc.ui.home.HomeScreen
+import com.hyuse.projectc.ui.profile.ProfileScreen
+import com.hyuse.projectc.ui.profile.ProfileViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -21,38 +30,37 @@ object Routes {
     const val LOGIN = "login"
     const val SIGN_UP = "signup"
     const val HOME = "home"
+    const val PROFILE = "profile"
 }
 
 /**
  * Main navigation graph for the app.
- * Handles auth-aware routing: if user is authenticated, navigates to Home;
- * otherwise shows Login/SignUp.
+ * Handles auth-aware routing and profile completion checks.
  */
 @Composable
 fun NavGraph(navController: NavHostController) {
-    // Share the AuthViewModel across all auth-related screens
     val authViewModel: AuthViewModel = koinViewModel()
     val authState by authViewModel.authState.collectAsState()
 
-    // React to auth state changes for navigation
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                navController.navigate(Routes.HOME) {
-                    // Clear backstack so user can't go back to login after signing in
-                    popUpTo(0) { inclusive = true }
+                val currentRoute = navController.currentDestination?.route
+                if (currentRoute == Routes.LOGIN || currentRoute == Routes.SIGN_UP || currentRoute == null) {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
             is AuthState.Unauthenticated -> {
-                // Only navigate to login if we're not already on an auth screen
                 val currentRoute = navController.currentDestination?.route
-                if (currentRoute == Routes.HOME || currentRoute == null) {
+                if (currentRoute != Routes.LOGIN && currentRoute != Routes.SIGN_UP) {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             }
-            else -> { /* Loading or Error — handled by individual screens */ }
+            else -> {}
         }
     }
 
@@ -93,10 +101,69 @@ fun NavGraph(navController: NavHostController) {
         composable(Routes.HOME) {
             val user = (authState as? AuthState.Authenticated)?.user
             if (user != null) {
-                HomeScreen(
+                val homeViewModel: HomeViewModel = koinViewModel()
+                val homeState by homeViewModel.homeState.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    homeViewModel.checkProfile(user.uid)
+                }
+
+                LaunchedEffect(homeState) {
+                    if (homeState is HomeState.ProfileMissing) {
+                        navController.navigate(Routes.PROFILE)
+                    }
+                }
+
+                if (homeState is HomeState.Loading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    HomeScreen(
+                        user = user,
+                        onLogout = {
+                            authViewModel.logout()
+                        },
+                        onNavigateToProfile = {
+                            navController.navigate(Routes.PROFILE)
+                        }
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PROFILE) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val profileViewModel: ProfileViewModel = koinViewModel()
+                val profileState by profileViewModel.profileState.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    profileViewModel.loadProfile(user.uid)
+                }
+
+                ProfileScreen(
                     user = user,
-                    onLogout = {
-                        authViewModel.logout()
+                    profileState = profileState,
+                    onSave = { name, university, course ->
+                        profileViewModel.saveProfile(
+                            uid = user.uid,
+                            name = name,
+                            email = user.email,
+                            university = university,
+                            course = course
+                        )
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onClearError = {
+                        profileViewModel.clearError()
+                    },
+                    onSaveSuccess = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.PROFILE) { inclusive = true }
+                        }
                     }
                 )
             }

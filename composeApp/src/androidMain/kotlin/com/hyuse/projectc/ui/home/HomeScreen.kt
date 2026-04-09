@@ -20,7 +20,8 @@ import com.hyuse.projectc.domain.model.User
 @Composable
 fun HomeScreen(
     user: User,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -123,10 +124,11 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Profile tile
-                PlaceholderTile(
+                ClickablePlaceholderTile(
                     emoji = "👤",
                     title = "Profile",
-                    subtitle = "Coming soon",
+                    subtitle = "View and edit",
+                    onClick = onNavigateToProfile,
                     modifier = Modifier.weight(1f)
                 )
                 // Settings tile
@@ -149,6 +151,44 @@ private fun PlaceholderTile(
     modifier: Modifier = Modifier
 ) {
     Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Text(text = emoji, fontSize = 28.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ClickablePlaceholderTile(
+    emoji: String,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(

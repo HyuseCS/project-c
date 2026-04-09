@@ -1,0 +1,148 @@
+package com.hyuse.projectc.ui.profile
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.hyuse.projectc.domain.model.User
+
+/**
+ * Screen for creating or editing a user profile.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileScreen(
+    user: User,
+    profileState: ProfileState,
+    onSave: (name: String, university: String, course: String) -> Unit,
+    onBack: () -> Unit,
+    onClearError: () -> Unit,
+    onSaveSuccess: () -> Unit
+) {
+    var name by remember { mutableStateFlowOf("") }
+    var university by remember { mutableStateFlowOf("") }
+    var course by remember { mutableStateFlowOf("") }
+
+    // Update fields when profile is loaded
+    LaunchedEffect(profileState) {
+        if (profileState is ProfileState.Success) {
+            name = profileState.profile.name
+            university = profileState.profile.university
+            course = profileState.profile.course
+        } else if (profileState is ProfileState.SaveSuccess) {
+            onSaveSuccess()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Your Profile", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Complete your profile to get started with Project C.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = user.email,
+                    onValueChange = {},
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = false,
+                    readOnly = true
+                )
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Full Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Enter your full name") }
+                )
+
+                OutlinedTextField(
+                    value = university,
+                    onValueChange = { university = it },
+                    label = { Text("University") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Which university do you attend?") }
+                )
+
+                OutlinedTextField(
+                    value = course,
+                    onValueChange = { course = it },
+                    label = { Text("Course") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("What are you studying?") }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { onSave(name, university, course) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    enabled = profileState !is ProfileState.Loading
+                ) {
+                    if (profileState is ProfileState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Save Profile")
+                    }
+                }
+
+                if (profileState is ProfileState.Error) {
+                    AlertDialog(
+                        onDismissRequest = onClearError,
+                        title = { Text("Error") },
+                        text = { Text(profileState.message) },
+                        confirmButton = {
+                            TextButton(onClick = onClearError) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Helper to use remember with mutableStateOf and initial value easily
+@Composable
+private fun mutableStateFlowOf(initialValue: String) = remember { mutableStateOf(initialValue) }
