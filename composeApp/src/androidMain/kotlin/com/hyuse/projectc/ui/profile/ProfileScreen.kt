@@ -3,8 +3,6 @@ package com.hyuse.projectc.ui.profile
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,9 +24,9 @@ fun ProfileScreen(
     onClearError: () -> Unit,
     onSaveSuccess: () -> Unit
 ) {
-    var name by remember { mutableStateFlowOf("") }
-    var university by remember { mutableStateFlowOf("") }
-    var course by remember { mutableStateFlowOf("") }
+    var name by rememberStringState("")
+    var university by rememberStringState("")
+    var course by rememberStringState("")
 
     // Update fields when profile is loaded
     LaunchedEffect(profileState) {
@@ -46,8 +44,8 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text("Your Profile", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    TextButton(onClick = onBack) {
+                        Text("Back")
                     }
                 }
             )
@@ -145,4 +143,4 @@ fun ProfileScreen(
 
 // Helper to use remember with mutableStateOf and initial value easily
 @Composable
-private fun mutableStateFlowOf(initialValue: String) = remember { mutableStateOf(initialValue) }
+private fun rememberStringState(initialValue: String) = remember { mutableStateOf(initialValue) }
