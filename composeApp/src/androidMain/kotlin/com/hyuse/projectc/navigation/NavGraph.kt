@@ -21,6 +21,10 @@ import com.hyuse.projectc.ui.home.HomeViewModel
 import com.hyuse.projectc.ui.home.HomeScreen
 import com.hyuse.projectc.ui.profile.ProfileScreen
 import com.hyuse.projectc.ui.profile.ProfileViewModel
+import com.hyuse.projectc.ui.utilities.ElectricityBillHistoryScreen
+import com.hyuse.projectc.ui.utilities.ElectricityBillScreen
+import com.hyuse.projectc.ui.utilities.ElectricityBillViewModel
+import com.hyuse.projectc.ui.utilities.UtilitiesHubScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -31,6 +35,9 @@ object Routes {
     const val SIGN_UP = "signup"
     const val HOME = "home"
     const val PROFILE = "profile"
+    const val UTILITIES = "utilities"
+    const val ELECTRICITY_CALCULATOR = "electricity_calculator"
+    const val ELECTRICITY_HISTORY = "electricity_history"
 }
 
 /**
@@ -126,6 +133,9 @@ fun NavGraph(navController: NavHostController) {
                         },
                         onNavigateToProfile = {
                             navController.navigate(Routes.PROFILE)
+                        },
+                        onNavigateToUtilities = {
+                            navController.navigate(Routes.UTILITIES)
                         }
                     )
                 }
@@ -164,6 +174,76 @@ fun NavGraph(navController: NavHostController) {
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.PROFILE) { inclusive = true }
                         }
+                    }
+                )
+            }
+        }
+
+        composable(Routes.UTILITIES) {
+            UtilitiesHubScreen(
+                onNavigateToElectricityCalculator = {
+                    navController.navigate(Routes.ELECTRICITY_CALCULATOR)
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Routes.ELECTRICITY_CALCULATOR) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: ElectricityBillViewModel = koinViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+                val history by viewModel.history.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    viewModel.loadHistory(user.uid)
+                }
+
+                ElectricityBillScreen(
+                    uiState = uiState,
+                    history = history,
+                    lastRate = viewModel.getLastRate(),
+                    lastCurrency = viewModel.getLastCurrency(),
+                    onCalculate = { month, year, prev, curr, rate, currency ->
+                        viewModel.calculate(month, year, prev, curr, rate, currency)
+                    },
+                    onSave = { forceOverwrite, overwriteId ->
+                        viewModel.saveResult(user.uid, forceOverwrite, overwriteId)
+                    },
+                    onNavigateToHistory = {
+                        navController.navigate(Routes.ELECTRICITY_HISTORY)
+                    },
+                    onResetState = {
+                        viewModel.resetState()
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+
+        composable(Routes.ELECTRICITY_HISTORY) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                // Since this screen is right below the calculator in the stack, we can grab the same viewmodel
+                // or just rely on the history already fetched, but since compose navigation is decoupled, 
+                // we instantiate the viewmodel again. Koin will return the instance or create a new one.
+                val viewModel: ElectricityBillViewModel = koinViewModel()
+                val history by viewModel.history.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    if (history.isEmpty()) {
+                        viewModel.loadHistory(user.uid)
+                    }
+                }
+
+                ElectricityBillHistoryScreen(
+                    history = history,
+                    onBack = {
+                        navController.popBackStack()
                     }
                 )
             }

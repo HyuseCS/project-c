@@ -21,7 +21,8 @@ import com.hyuse.projectc.domain.model.User
 fun HomeScreen(
     user: User,
     onLogout: () -> Unit,
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToUtilities: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -101,11 +102,12 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Calculator tile
-                PlaceholderTile(
-                    emoji = "🔢",
-                    title = "Calculators",
-                    subtitle = "Coming soon",
+                // Utilities tile
+                ClickablePlaceholderTile(
+                    emoji = "🛠️",
+                    title = "Utilities",
+                    subtitle = "Calculators & tools",
+                    onClick = onNavigateToUtilities,
                     modifier = Modifier.weight(1f)
                 )
                 // Reminders tile
