@@ -4,6 +4,7 @@ import com.hyuse.projectc.ui.auth.AuthViewModel
 import com.hyuse.projectc.ui.home.HomeViewModel
 import com.hyuse.projectc.ui.profile.ProfileViewModel
 import com.hyuse.projectc.ui.utilities.ElectricityBillViewModel
+import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -16,5 +17,6 @@ val appModule = module {
     viewModel { ProfileViewModel(get(), get()) }
     viewModel { HomeViewModel(get()) }
     viewModel { ElectricityBillViewModel(get(), get(), get()) }
+    viewModel { ElectricityPredictorViewModel(get()) }
 }
 

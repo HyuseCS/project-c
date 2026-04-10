@@ -25,6 +25,8 @@ import com.hyuse.projectc.ui.utilities.ElectricityBillHistoryScreen
 import com.hyuse.projectc.ui.utilities.ElectricityBillScreen
 import com.hyuse.projectc.ui.utilities.ElectricityBillViewModel
 import com.hyuse.projectc.ui.utilities.UtilitiesHubScreen
+import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorScreen
+import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -38,6 +40,7 @@ object Routes {
     const val UTILITIES = "utilities"
     const val ELECTRICITY_CALCULATOR = "electricity_calculator"
     const val ELECTRICITY_HISTORY = "electricity_history"
+    const val ELECTRICITY_PREDICTOR = "electricity_predictor"
 }
 
 /**
@@ -184,6 +187,9 @@ fun NavGraph(navController: NavHostController) {
                 onNavigateToElectricityCalculator = {
                     navController.navigate(Routes.ELECTRICITY_CALCULATOR)
                 },
+                onNavigateToElectricityPredictor = {
+                    navController.navigate(Routes.ELECTRICITY_PREDICTOR)
+                },
                 onBack = {
                     navController.popBackStack()
                 }
@@ -242,6 +248,44 @@ fun NavGraph(navController: NavHostController) {
 
                 ElectricityBillHistoryScreen(
                     history = history,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+
+        composable(Routes.ELECTRICITY_PREDICTOR) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: ElectricityPredictorViewModel = koinViewModel()
+                val appliances by viewModel.appliances.collectAsState()
+                val summary by viewModel.summary.collectAsState()
+                val ratePerKwh by viewModel.ratePerKwh.collectAsState()
+                val currencySymbol by viewModel.currencySymbol.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    viewModel.loadPreferences(user.uid)
+                }
+
+                ElectricityPredictorScreen(
+                    appliances = appliances,
+                    summary = summary,
+                    ratePerKwh = ratePerKwh,
+                    currencySymbol = currencySymbol,
+                    onAddAppliance = { name, wattage, hours, days, qty ->
+                        viewModel.addAppliance(name, wattage, hours, days, qty)
+                    },
+                    onRemoveAppliance = { id ->
+                        viewModel.removeAppliance(id)
+                    },
+                    onRateChanged = { rate ->
+                        viewModel.updateRate(rate)
+                    },
+                    onCurrencyChanged = { symbol ->
+                        viewModel.updateCurrency(symbol)
+                    },
+                    currencies = viewModel.currencies,
                     onBack = {
                         navController.popBackStack()
                     }
