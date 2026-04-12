@@ -63,7 +63,7 @@ class ProfileViewModel(
     /**
      * Saves or updates the user profile.
      */
-    fun saveProfile(uid: String, name: String, email: String, university: String, course: String) {
+    fun saveProfile(uid: String, name: String, nickname: String, email: String, university: String, course: String) {
         if (name.isBlank() || university.isBlank() || course.isBlank()) {
             _profileState.value = ProfileState.Error("All fields are required")
             return
@@ -75,6 +75,7 @@ class ProfileViewModel(
                 val profile = UserProfile(
                     uid = uid,
                     name = name.trim(),
+                    nickname = nickname.trim().takeIf { it.isNotBlank() },
                     email = email.trim(),
                     university = university.trim(),
                     course = course.trim()

@@ -115,7 +115,7 @@ fun NavGraph(navController: NavHostController) {
                 val homeState by homeViewModel.homeState.collectAsState()
 
                 LaunchedEffect(user.uid) {
-                    homeViewModel.checkProfile(user.uid)
+                    homeViewModel.loadDashboard(user.uid)
                 }
 
                 LaunchedEffect(homeState) {
@@ -128,9 +128,9 @@ fun NavGraph(navController: NavHostController) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
-                } else {
+                } else if (homeState is HomeState.Success) {
                     HomeScreen(
-                        user = user,
+                        state = homeState as HomeState.Success,
                         onLogout = {
                             authViewModel.logout()
                         },
@@ -158,10 +158,11 @@ fun NavGraph(navController: NavHostController) {
                 ProfileScreen(
                     user = user,
                     profileState = profileState,
-                    onSave = { name, university, course ->
+                    onSave = { name, nickname, university, course ->
                         profileViewModel.saveProfile(
                             uid = user.uid,
                             name = name,
+                            nickname = nickname,
                             email = user.email,
                             university = university,
                             course = course

@@ -19,12 +19,13 @@ import com.hyuse.projectc.domain.model.User
 fun ProfileScreen(
     user: User,
     profileState: ProfileState,
-    onSave: (name: String, university: String, course: String) -> Unit,
+    onSave: (name: String, nickname: String, university: String, course: String) -> Unit,
     onBack: () -> Unit,
     onClearError: () -> Unit,
     onSaveSuccess: () -> Unit
 ) {
     var name by rememberStringState("")
+    var nickname by rememberStringState("")
     var university by rememberStringState("")
     var course by rememberStringState("")
 
@@ -32,6 +33,7 @@ fun ProfileScreen(
     LaunchedEffect(profileState) {
         if (profileState is ProfileState.Success) {
             name = profileState.profile.name
+            nickname = profileState.profile.nickname ?: ""
             university = profileState.profile.university
             course = profileState.profile.course
         } else if (profileState is ProfileState.SaveSuccess) {
@@ -90,6 +92,14 @@ fun ProfileScreen(
                 )
 
                 OutlinedTextField(
+                    value = nickname,
+                    onValueChange = { nickname = it },
+                    label = { Text("Nickname (Optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("How should we call you?") }
+                )
+
+                OutlinedTextField(
                     value = university,
                     onValueChange = { university = it },
                     label = { Text("University") },
@@ -108,7 +118,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { onSave(name, university, course) },
+                    onClick = { onSave(name, nickname, university, course) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     enabled = profileState !is ProfileState.Loading
