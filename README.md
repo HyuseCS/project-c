@@ -18,7 +18,7 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 
 ### Build and Run Android Application
 
-To build and run the development version of the Android app, use the run configuration from the run widget
+To build the development version of the Android app, use the run configuration from the run widget
 in your IDE’s toolbar or build it directly from the terminal:
 - on macOS/Linux
   ```shell
@@ -27,6 +27,16 @@ in your IDE’s toolbar or build it directly from the terminal:
 - on Windows
   ```shell
   .\gradlew.bat :composeApp:assembleDebug
+  ```
+
+To build and install the app directly to a connected device or emulator:
+- on macOS/Linux
+  ```shell
+  ./gradlew :composeApp:installDebug
+  ```
+- on Windows
+  ```shell
+  .\gradlew.bat :composeApp:installDebug
   ```
 
 ### Build and Run iOS Application
