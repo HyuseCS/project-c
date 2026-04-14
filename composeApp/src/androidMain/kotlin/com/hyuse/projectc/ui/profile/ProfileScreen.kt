@@ -45,7 +45,7 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Your Profile", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
+                actions = {
                     TextButton(onClick = onBack) {
                         Text("Back")
                     }
