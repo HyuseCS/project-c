@@ -25,6 +25,9 @@ import com.hyuse.projectc.ui.utilities.ElectricityBillHistoryScreen
 import com.hyuse.projectc.ui.utilities.ElectricityBillScreen
 import com.hyuse.projectc.ui.utilities.ElectricityBillViewModel
 import com.hyuse.projectc.ui.utilities.UtilitiesHubScreen
+import com.hyuse.projectc.ui.utilities.WaterBillHistoryScreen
+import com.hyuse.projectc.ui.utilities.WaterBillScreen
+import com.hyuse.projectc.ui.utilities.WaterBillViewModel
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorScreen
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,6 +44,8 @@ object Routes {
     const val ELECTRICITY_CALCULATOR = "electricity_calculator"
     const val ELECTRICITY_HISTORY = "electricity_history"
     const val ELECTRICITY_PREDICTOR = "electricity_predictor"
+    const val WATER_CALCULATOR = "water_calculator"
+    const val WATER_HISTORY = "water_history"
 }
 
 /**
@@ -191,10 +196,45 @@ fun NavGraph(navController: NavHostController) {
                 onNavigateToElectricityPredictor = {
                     navController.navigate(Routes.ELECTRICITY_PREDICTOR)
                 },
+                onNavigateToWaterCalculator = {
+                    navController.navigate(Routes.WATER_CALCULATOR)
+                },
                 onBack = {
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Routes.WATER_CALCULATOR) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                WaterBillScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToHistory = { navController.navigate(Routes.WATER_HISTORY) },
+                    uid = user.uid
+                )
+            }
+        }
+
+        composable(Routes.WATER_HISTORY) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: WaterBillViewModel = koinViewModel()
+                val history by viewModel.history.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    if (history.isEmpty()) {
+                        viewModel.loadHistory(user.uid)
+                    }
+                }
+
+                WaterBillHistoryScreen(
+                    history = history,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         }
 
         composable(Routes.ELECTRICITY_CALCULATOR) {

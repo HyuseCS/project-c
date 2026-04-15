@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 fun UtilitiesHubScreen(
     onNavigateToElectricityCalculator: () -> Unit,
     onNavigateToElectricityPredictor: () -> Unit,
+    onNavigateToWaterCalculator: () -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -65,13 +66,13 @@ fun UtilitiesHubScreen(
                 onClick = onNavigateToElectricityPredictor
             )
 
-            // Water Bill Calculator — coming soon
+            // Water Bill Calculator
             UtilityCard(
                 emoji = "💧",
                 title = "Water Bill Calculator",
-                subtitle = "Coming soon",
-                enabled = false,
-                onClick = {}
+                subtitle = "Calculate from meter readings",
+                enabled = true,
+                onClick = onNavigateToWaterCalculator
             )
         }
     }

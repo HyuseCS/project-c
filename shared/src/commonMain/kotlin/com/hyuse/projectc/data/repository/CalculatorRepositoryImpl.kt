@@ -1,6 +1,7 @@
 package com.hyuse.projectc.data.repository
 
 import com.hyuse.projectc.domain.model.ElectricityBillResult
+import com.hyuse.projectc.domain.model.WaterBillResult
 import com.hyuse.projectc.domain.repository.CalculatorRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -9,20 +10,23 @@ import dev.gitlive.firebase.firestore.firestore
 
 /**
  * Firestore implementation of [CalculatorRepository].
- * Stores electricity bill calculations in the "calculators" subcollection under each user.
+ * Stores bill calculations in subcollections under each user.
  */
 class CalculatorRepositoryImpl(
     private val firestore: FirebaseFirestore = Firebase.firestore
 ) : CalculatorRepository {
 
-    private fun calculatorsCollection(uid: String) =
+    private fun electricityCalculatorsCollection(uid: String) =
         firestore.collection("users").document(uid).collection("calculators")
+
+    private fun waterCalculatorsCollection(uid: String) =
+        firestore.collection("users").document(uid).collection("water_calculators")
 
     override suspend fun saveElectricityBill(uid: String, result: ElectricityBillResult) {
         val docRef = if (result.id.isNotEmpty()) {
-            calculatorsCollection(uid).document(result.id)
+            electricityCalculatorsCollection(uid).document(result.id)
         } else {
-            calculatorsCollection(uid).document
+            electricityCalculatorsCollection(uid).document
         }
         val resultWithId = result.copy(id = docRef.id)
         docRef.set(ElectricityBillResult.serializer(), resultWithId)
@@ -30,7 +34,7 @@ class CalculatorRepositoryImpl(
 
     override suspend fun getElectricityBillHistory(uid: String): List<ElectricityBillResult> {
         return try {
-            val snapshot = calculatorsCollection(uid)
+            val snapshot = electricityCalculatorsCollection(uid)
                 .orderBy("timestamp", Direction.DESCENDING)
                 .get()
             snapshot.documents.map { doc ->
@@ -42,6 +46,33 @@ class CalculatorRepositoryImpl(
     }
 
     override suspend fun deleteElectricityBill(uid: String, resultId: String) {
-        calculatorsCollection(uid).document(resultId).delete()
+        electricityCalculatorsCollection(uid).document(resultId).delete()
+    }
+
+    override suspend fun saveWaterBill(uid: String, result: WaterBillResult) {
+        val docRef = if (result.id.isNotEmpty()) {
+            waterCalculatorsCollection(uid).document(result.id)
+        } else {
+            waterCalculatorsCollection(uid).document
+        }
+        val resultWithId = result.copy(id = docRef.id)
+        docRef.set(WaterBillResult.serializer(), resultWithId)
+    }
+
+    override suspend fun getWaterBillHistory(uid: String): List<WaterBillResult> {
+        return try {
+            val snapshot = waterCalculatorsCollection(uid)
+                .orderBy("timestamp", Direction.DESCENDING)
+                .get()
+            snapshot.documents.map { doc ->
+                doc.data<WaterBillResult>()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun deleteWaterBill(uid: String, resultId: String) {
+        waterCalculatorsCollection(uid).document(resultId).delete()
     }
 }
