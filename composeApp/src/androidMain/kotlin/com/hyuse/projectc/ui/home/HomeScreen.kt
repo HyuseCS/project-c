@@ -22,7 +22,8 @@ fun HomeScreen(
     state: HomeState.Success,
     onLogout: () -> Unit,
     onNavigateToProfile: () -> Unit = {},
-    onNavigateToUtilities: () -> Unit = {}
+    onNavigateToUtilities: () -> Unit = {},
+    onNavigateToExpenses: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -54,7 +55,8 @@ fun HomeScreen(
                         QuickActions(
                             actions = widget.actions,
                             onNavigateToUtilities = onNavigateToUtilities,
-                            onNavigateToProfile = onNavigateToProfile
+                            onNavigateToProfile = onNavigateToProfile,
+                            onNavigateToExpenses = onNavigateToExpenses
                         )
                     }
                 }
@@ -144,7 +146,8 @@ fun ElectricityGraph(dataPoints: List<MonthlyUsage>) {
 fun QuickActions(
     actions: List<ActionItem>,
     onNavigateToUtilities: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToExpenses: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -170,6 +173,7 @@ fun QuickActions(
                             when (action.route) {
                                 "utilities" -> onNavigateToUtilities()
                                 "profile" -> onNavigateToProfile()
+                                "expenses" -> onNavigateToExpenses()
                             }
                         },
                         modifier = Modifier.weight(1f)

@@ -94,6 +94,7 @@ class HomeViewModel(
             val quickActionsWidget = DashboardWidget.QuickActionsWidget(
                 actions = listOf(
                     ActionItem("Utilities", "Calculators & tools", "🛠️", "utilities"),
+                    ActionItem("Expenses", "Track expenses", "💰", "expenses"),
                     ActionItem("Profile", "View and edit", "👤", "profile")
                 )
             )

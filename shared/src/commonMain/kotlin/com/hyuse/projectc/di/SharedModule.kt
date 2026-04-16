@@ -2,9 +2,11 @@ package com.hyuse.projectc.di
 
 import com.hyuse.projectc.data.repository.AuthRepositoryImpl
 import com.hyuse.projectc.data.repository.CalculatorRepositoryImpl
+import com.hyuse.projectc.data.repository.ExpenseRepositoryImpl
 import com.hyuse.projectc.data.repository.ProfileRepositoryImpl
 import com.hyuse.projectc.domain.repository.AuthRepository
 import com.hyuse.projectc.domain.repository.CalculatorRepository
+import com.hyuse.projectc.domain.repository.ExpenseRepository
 import com.hyuse.projectc.domain.repository.ProfileRepository
 import com.hyuse.projectc.domain.usecase.*
 import org.koin.dsl.module
@@ -18,6 +20,7 @@ val sharedModule = module {
     single<AuthRepository> { AuthRepositoryImpl() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single<CalculatorRepository> { CalculatorRepositoryImpl() }
+    single<ExpenseRepository> { ExpenseRepositoryImpl() }
 
     // Auth use cases — factory
     factory { SignUpUseCase(get()) }
@@ -38,4 +41,11 @@ val sharedModule = module {
     factory { CalculateWaterBillUseCase() }
     factory { SaveWaterBillUseCase(get()) }
     factory { GetWaterBillHistoryUseCase(get()) }
+
+    // Expense use cases — factory
+    factory { AddExpenseUseCase(get()) }
+    factory { DeleteExpenseUseCase(get()) }
+    factory { ObserveMonthlyExpensesUseCase(get()) }
+    factory { GetMergedCategoriesUseCase(get()) }
+    factory { SaveCustomCategoryUseCase(get()) }
 }

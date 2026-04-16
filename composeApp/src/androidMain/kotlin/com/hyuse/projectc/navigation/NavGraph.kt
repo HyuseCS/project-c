@@ -46,6 +46,9 @@ object Routes {
     const val ELECTRICITY_PREDICTOR = "electricity_predictor"
     const val WATER_CALCULATOR = "water_calculator"
     const val WATER_HISTORY = "water_history"
+    const val EXPENSES_DASHBOARD = "expenses_dashboard"
+    const val ADD_EXPENSE = "add_expense"
+    const val MANAGE_CATEGORIES = "manage_categories"
 }
 
 /**
@@ -144,6 +147,9 @@ fun NavGraph(navController: NavHostController) {
                         },
                         onNavigateToUtilities = {
                             navController.navigate(Routes.UTILITIES)
+                        },
+                        onNavigateToExpenses = {
+                            navController.navigate(Routes.EXPENSES_DASHBOARD)
                         }
                     )
                 }
@@ -330,6 +336,73 @@ fun NavGraph(navController: NavHostController) {
                     onBack = {
                         navController.popBackStack()
                     }
+                )
+            }
+        }
+
+        composable(Routes.EXPENSES_DASHBOARD) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: com.hyuse.projectc.ui.expenses.ExpensesViewModel = koinViewModel()
+                val state by viewModel.state.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    viewModel.loadData(user.uid)
+                }
+
+                com.hyuse.projectc.ui.expenses.ExpensesDashboardScreen(
+                    state = state,
+                    onNextMonth = { viewModel.nextMonth() },
+                    onPreviousMonth = { viewModel.previousMonth() },
+                    onAddExpense = { navController.navigate(Routes.ADD_EXPENSE) },
+                    onManageCategories = { navController.navigate(Routes.MANAGE_CATEGORIES) },
+                    onDeleteExpense = { id -> viewModel.deleteExpense(id) },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Routes.ADD_EXPENSE) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: com.hyuse.projectc.ui.expenses.ExpensesViewModel = koinViewModel()
+                val state by viewModel.state.collectAsState()
+
+                // State should be already loaded by dashboard, but we can ensure it
+                LaunchedEffect(user.uid) {
+                    if (state is com.hyuse.projectc.ui.expenses.ExpensesState.Loading) {
+                        viewModel.loadData(user.uid)
+                    }
+                }
+
+                com.hyuse.projectc.ui.expenses.AddExpenseScreen(
+                    state = state,
+                    onSave = { amount, categoryId, categoryName, desc ->
+                        viewModel.addExpense(amount, categoryId, categoryName, desc)
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Routes.MANAGE_CATEGORIES) {
+            val user = (authState as? AuthState.Authenticated)?.user
+            if (user != null) {
+                val viewModel: com.hyuse.projectc.ui.expenses.ExpensesViewModel = koinViewModel()
+                val state by viewModel.state.collectAsState()
+
+                LaunchedEffect(user.uid) {
+                    if (state is com.hyuse.projectc.ui.expenses.ExpensesState.Loading) {
+                        viewModel.loadData(user.uid)
+                    }
+                }
+
+                com.hyuse.projectc.ui.expenses.CategoryManagerScreen(
+                    state = state,
+                    onAddCustomCategory = { name, icon ->
+                        viewModel.addCustomCategory(name, icon)
+                    },
+                    onBack = { navController.popBackStack() }
                 )
             }
         }

@@ -22,10 +22,9 @@ node_modules/
 **/google-services.json
 **/GoogleService-Info.plist
 
+/planning/*
 # Memory
 memory.md
-phase2_plan.md
-phase3_plan.md
-phase4_plan.md
-phase5_plan.md
+completed_phases_plan.md
+phase6_expenses_plan.md
 GEMINI.md
