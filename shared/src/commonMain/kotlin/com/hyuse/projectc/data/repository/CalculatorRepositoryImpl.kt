@@ -7,6 +7,8 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Direction
 import dev.gitlive.firebase.firestore.firestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Firestore implementation of [CalculatorRepository].
@@ -45,6 +47,17 @@ class CalculatorRepositoryImpl(
         }
     }
 
+    override fun observeElectricityBillHistory(uid: String): Flow<List<ElectricityBillResult>> {
+        return electricityCalculatorsCollection(uid)
+            .orderBy("timestamp", Direction.DESCENDING)
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { doc ->
+                    doc.data<ElectricityBillResult>()
+                }
+            }
+    }
+
     override suspend fun deleteElectricityBill(uid: String, resultId: String) {
         electricityCalculatorsCollection(uid).document(resultId).delete()
     }
@@ -70,6 +83,17 @@ class CalculatorRepositoryImpl(
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    override fun observeWaterBillHistory(uid: String): Flow<List<WaterBillResult>> {
+        return waterCalculatorsCollection(uid)
+            .orderBy("timestamp", Direction.DESCENDING)
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { doc ->
+                    doc.data<WaterBillResult>()
+                }
+            }
     }
 
     override suspend fun deleteWaterBill(uid: String, resultId: String) {

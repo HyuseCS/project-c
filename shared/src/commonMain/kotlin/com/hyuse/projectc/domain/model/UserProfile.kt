@@ -13,5 +13,6 @@ data class UserProfile(
     val email: String,
     val university: String,
     val course: String,
-    val currencySymbol: String = "₱"
+    val currencySymbol: String = "RM",
+    val dashboardWidgets: List<String> = listOf("welcome", "electricity", "water", "expenses", "activity", "actions")
 )

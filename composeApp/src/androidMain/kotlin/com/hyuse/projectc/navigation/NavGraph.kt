@@ -126,33 +126,24 @@ fun NavGraph(navController: NavHostController) {
                     homeViewModel.loadDashboard(user.uid)
                 }
 
-                LaunchedEffect(homeState) {
-                    if (homeState is HomeState.ProfileMissing) {
+                HomeScreen(
+                    state = homeState,
+                    onLogout = {
+                        authViewModel.logout()
+                    },
+                    onUpdateWidgets = { widgets ->
+                        homeViewModel.updateWidgets(widgets)
+                    },
+                    onNavigateToProfile = {
                         navController.navigate(Routes.PROFILE)
+                    },
+                    onNavigateToUtilities = {
+                        navController.navigate(Routes.UTILITIES)
+                    },
+                    onNavigateToExpenses = {
+                        navController.navigate(Routes.EXPENSES_DASHBOARD)
                     }
-                }
-
-                if (homeState is HomeState.Loading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                } else if (homeState is HomeState.Success) {
-                    HomeScreen(
-                        state = homeState as HomeState.Success,
-                        onLogout = {
-                            authViewModel.logout()
-                        },
-                        onNavigateToProfile = {
-                            navController.navigate(Routes.PROFILE)
-                        },
-                        onNavigateToUtilities = {
-                            navController.navigate(Routes.UTILITIES)
-                        },
-                        onNavigateToExpenses = {
-                            navController.navigate(Routes.EXPENSES_DASHBOARD)
-                        }
-                    )
-                }
+                )
             }
         }
 

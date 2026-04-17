@@ -17,7 +17,7 @@ import org.koin.dsl.module
 val appModule = module {
     viewModel { AuthViewModel(get(), get(), get(), get()) }
     viewModel { ProfileViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { ElectricityBillViewModel(get(), get(), get(), get()) }
     viewModel { WaterBillViewModel(get(), get(), get(), get()) }
     viewModel { ElectricityPredictorViewModel(get(), get()) }
