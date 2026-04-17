@@ -63,7 +63,7 @@ class ProfileViewModel(
     /**
      * Saves or updates the user profile.
      */
-    fun saveProfile(uid: String, name: String, nickname: String, email: String, university: String, course: String) {
+    fun saveProfile(uid: String, name: String, nickname: String, email: String, university: String, course: String, currencySymbol: String) {
         if (name.isBlank() || university.isBlank() || course.isBlank()) {
             _profileState.value = ProfileState.Error("All fields are required")
             return
@@ -78,7 +78,8 @@ class ProfileViewModel(
                     nickname = nickname.trim().takeIf { it.isNotBlank() },
                     email = email.trim(),
                     university = university.trim(),
-                    course = course.trim()
+                    course = course.trim(),
+                    currencySymbol = currencySymbol
                 )
                 saveProfileUseCase(profile)
                 _profileState.value = ProfileState.SaveSuccess

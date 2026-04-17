@@ -26,8 +26,6 @@ fun ElectricityPredictorScreen(
     onAddAppliance: (name: String, wattage: Double, hours: Double, days: Int, qty: Int) -> Unit,
     onRemoveAppliance: (id: String) -> Unit,
     onRateChanged: (Double) -> Unit,
-    onCurrencyChanged: (String) -> Unit,
-    currencies: List<Pair<String, String>>,
     onBack: () -> Unit,
     viewModel: ElectricityPredictorViewModel = koinViewModel()
 ) {
@@ -60,9 +58,7 @@ fun ElectricityPredictorScreen(
                 summary = summary,
                 ratePerKwh = ratePerKwh,
                 currencySymbol = currencySymbol,
-                currencies = currencies,
-                onRateChanged = onRateChanged,
-                onCurrencyChanged = onCurrencyChanged
+                onRateChanged = onRateChanged
             )
 
             HorizontalDivider()
@@ -114,9 +110,7 @@ private fun PredictorHeader(
     summary: PredictorSummary,
     ratePerKwh: Double,
     currencySymbol: String,
-    currencies: List<Pair<String, String>>,
-    onRateChanged: (Double) -> Unit,
-    onCurrencyChanged: (String) -> Unit
+    onRateChanged: (Double) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -189,37 +183,19 @@ private fun PredictorHeader(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            var currencyExpanded by remember { mutableStateOf(false) }
-            val currentCurrencyName = currencies.find { it.second == currencySymbol }?.first ?: currencySymbol
-            
-            ExposedDropdownMenuBox(
-                expanded = currencyExpanded,
-                onExpandedChange = { currencyExpanded = !currencyExpanded },
-                modifier = Modifier.weight(1f)
-            ) {
-                OutlinedTextField(
-                    readOnly = true,
-                    value = currentCurrencyName,
-                    onValueChange = {},
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.menuAnchor()
+            OutlinedTextField(
+                readOnly = true,
+                value = currencySymbol,
+                onValueChange = {},
+                label = { Text("Currency") },
+                modifier = Modifier.width(100.dp),
+                enabled = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline
                 )
-                ExposedDropdownMenu(
-                    expanded = currencyExpanded,
-                    onDismissRequest = { currencyExpanded = false }
-                ) {
-                    currencies.forEach { (name, sym) ->
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = {
-                                onCurrencyChanged(sym)
-                                currencyExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+            )
 
             var rateText by remember(ratePerKwh) { mutableStateOf(if(ratePerKwh > 0) ratePerKwh.toString() else "") }
             OutlinedTextField(

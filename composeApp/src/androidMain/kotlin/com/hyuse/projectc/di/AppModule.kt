@@ -18,9 +18,9 @@ val appModule = module {
     viewModel { AuthViewModel(get(), get(), get(), get()) }
     viewModel { ProfileViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get()) }
-    viewModel { ElectricityBillViewModel(get(), get(), get()) }
-    viewModel { WaterBillViewModel(get(), get(), get()) }
-    viewModel { ElectricityPredictorViewModel(get()) }
-    viewModel { ExpensesViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ElectricityBillViewModel(get(), get(), get(), get()) }
+    viewModel { WaterBillViewModel(get(), get(), get(), get()) }
+    viewModel { ElectricityPredictorViewModel(get(), get()) }
+    viewModel { ExpensesViewModel(get(), get(), get(), get(), get(), get()) }
 }
 

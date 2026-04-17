@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hyuse.projectc.domain.model.ElectricityBillResult
 import com.hyuse.projectc.domain.usecase.CalculateElectricityBillUseCase
 import com.hyuse.projectc.domain.usecase.GetElectricityBillHistoryUseCase
+import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
 import com.hyuse.projectc.domain.usecase.SaveElectricityBillUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,8 @@ sealed class ElectricBillUiState {
 class ElectricityBillViewModel(
     private val calculateUseCase: CalculateElectricityBillUseCase,
     private val saveUseCase: SaveElectricityBillUseCase,
-    private val getHistoryUseCase: GetElectricityBillHistoryUseCase
+    private val getHistoryUseCase: GetElectricityBillHistoryUseCase,
+    private val observeProfileUseCase: ObserveProfileUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ElectricBillUiState>(ElectricBillUiState.Idle)
@@ -40,18 +42,11 @@ class ElectricityBillViewModel(
     private val _history = MutableStateFlow<List<ElectricityBillResult>>(emptyList())
     val history: StateFlow<List<ElectricityBillResult>> = _history.asStateFlow()
 
+    private val _currencySymbol = MutableStateFlow("₱")
+    val currencySymbol: StateFlow<String> = _currencySymbol.asStateFlow()
+
     /** The last calculated result, held for saving. */
     private var lastResult: ElectricityBillResult? = null
-
-    // Predefined list of currencies for the dropdown
-    val currencies = listOf(
-        "₱ (Philippines)" to "₱",
-        "$ (USA)" to "$",
-        "€ (Eurozone)" to "€",
-        "£ (UK)" to "£",
-        "¥ (Japan)" to "¥",
-        "₩ (South Korea)" to "₩"
-    )
 
     fun loadHistory(uid: String) {
         viewModelScope.launch {
@@ -61,10 +56,15 @@ class ElectricityBillViewModel(
                 // Silently fail — history is non-critical
             }
         }
+
+        viewModelScope.launch {
+            observeProfileUseCase(uid).collect { profile ->
+                _currencySymbol.value = profile?.currencySymbol ?: "₱"
+            }
+        }
     }
 
     fun getLastRate(): Double? = _history.value.firstOrNull()?.ratePerKwh
-    fun getLastCurrency(): String = _history.value.firstOrNull()?.currencySymbol ?: "₱"
 
     /**
      * Determines what the previous reading should be, based on selecting a billing month and year.
@@ -83,8 +83,7 @@ class ElectricityBillViewModel(
         billingYear: Int,
         previousReading: String,
         currentReading: String,
-        ratePerKwh: String,
-        currencySymbol: String
+        ratePerKwh: String
     ) {
         val prev = previousReading.toDoubleOrNull()
         val curr = currentReading.toDoubleOrNull()
@@ -111,7 +110,7 @@ class ElectricityBillViewModel(
             previousReading = prev,
             currentReading = curr,
             ratePerKwh = rate,
-            currencySymbol = currencySymbol.ifBlank { "₱" },
+            currencySymbol = _currencySymbol.value,
             timestamp = System.currentTimeMillis()
         )
         lastResult = result

@@ -12,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.hyuse.projectc.domain.model.AppConstants
 import com.hyuse.projectc.domain.model.Expense
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -68,7 +68,7 @@ fun ExpensesDashboardScreen(
                             onNext = onNextMonth
                         )
                         
-                        SummaryCard(total = state.totalMonthly)
+                        SummaryCard(total = state.totalMonthly, currencySymbol = state.currencySymbol)
 
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -89,12 +89,14 @@ fun ExpensesDashboardScreen(
                                     stickyHeader {
                                         DayHeader(
                                             dateString = dayGroup.dateString,
-                                            dayTotal = dayGroup.dayTotal
+                                            dayTotal = dayGroup.dayTotal,
+                                            currencySymbol = state.currencySymbol
                                         )
                                     }
                                     items(dayGroup.expenses) { expense ->
                                         ExpenseItem(
                                             expense = expense,
+                                            currencySymbol = state.currencySymbol,
                                             onDelete = { onDeleteExpense(expense.id) }
                                         )
                                     }
@@ -128,8 +130,8 @@ fun MonthSelector(month: Int, year: Int, onPrevious: () -> Unit, onNext: () -> U
 }
 
 @Composable
-fun SummaryCard(total: Double) {
-    val formattedTotal = NumberFormat.getCurrencyInstance().format(total)
+fun SummaryCard(total: Double, currencySymbol: String) {
+    val formattedTotal = AppConstants.formatCurrency(total, currencySymbol)
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
@@ -144,8 +146,8 @@ fun SummaryCard(total: Double) {
 }
 
 @Composable
-fun DayHeader(dateString: String, dayTotal: Double) {
-    val formattedTotal = NumberFormat.getCurrencyInstance().format(dayTotal)
+fun DayHeader(dateString: String, dayTotal: Double, currencySymbol: String) {
+    val formattedTotal = AppConstants.formatCurrency(dayTotal, currencySymbol)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,8 +161,8 @@ fun DayHeader(dateString: String, dayTotal: Double) {
 }
 
 @Composable
-fun ExpenseItem(expense: Expense, onDelete: () -> Unit) {
-    val formattedAmount = NumberFormat.getCurrencyInstance().format(expense.amount)
+fun ExpenseItem(expense: Expense, currencySymbol: String, onDelete: () -> Unit) {
+    val formattedAmount = AppConstants.formatCurrency(expense.amount, currencySymbol)
     ListItem(
         headlineContent = { Text(expense.categoryName, fontWeight = FontWeight.SemiBold) },
         supportingContent = { if (expense.description.isNotEmpty()) Text(expense.description) },

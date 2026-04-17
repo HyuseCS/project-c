@@ -12,5 +12,6 @@ data class UserProfile(
     val nickname: String? = null,
     val email: String,
     val university: String,
-    val course: String
+    val course: String,
+    val currencySymbol: String = "₱"
 )

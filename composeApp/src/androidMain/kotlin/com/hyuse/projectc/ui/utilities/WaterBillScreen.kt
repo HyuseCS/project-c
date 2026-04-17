@@ -30,6 +30,7 @@ fun WaterBillScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val history by viewModel.history.collectAsState()
+    val currencySymbol by viewModel.currencySymbol.collectAsState()
 
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1 // 1-indexed
@@ -39,14 +40,12 @@ fun WaterBillScreen(
     var previousReading by remember { mutableStateOf("") }
     var currentReading by remember { mutableStateOf("") }
     var ratePerCubicMeter by remember { mutableStateOf("") }
-    var currencySymbol by remember { mutableStateOf("") }
 
     val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
     val years = (currentYear - 5..currentYear + 1).toList().reversed()
 
     var showMonthMenu by remember { mutableStateOf(false) }
     var showYearMenu by remember { mutableStateOf(false) }
-    var showCurrencyMenu by remember { mutableStateOf(false) }
 
     // Initial load
     LaunchedEffect(uid) {
@@ -57,9 +56,6 @@ fun WaterBillScreen(
     LaunchedEffect(history, billingMonth, billingYear) {
         if (ratePerCubicMeter.isEmpty()) {
             viewModel.getLastRate()?.let { ratePerCubicMeter = it.toString() }
-        }
-        if (currencySymbol.isEmpty()) {
-            currencySymbol = viewModel.getLastCurrency()
         }
         
         // Auto-fill previous reading based on history
@@ -193,40 +189,25 @@ fun WaterBillScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            ExposedDropdownMenuBox(
-                                expanded = showCurrencyMenu,
-                                onExpandedChange = { showCurrencyMenu = it },
-                                modifier = Modifier.weight(0.4f)
-                            ) {
-                                OutlinedTextField(
-                                    value = currencySymbol,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("Curr") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showCurrencyMenu) },
-                                    modifier = Modifier.menuAnchor()
+                            OutlinedTextField(
+                                value = currencySymbol,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Curr") },
+                                modifier = Modifier.weight(0.3f),
+                                enabled = false,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    disabledBorderColor = MaterialTheme.colorScheme.outline
                                 )
-                                ExposedDropdownMenu(
-                                    expanded = showCurrencyMenu,
-                                    onDismissRequest = { showCurrencyMenu = false }
-                                ) {
-                                    viewModel.currencies.forEach { (label, symbol) ->
-                                        DropdownMenuItem(
-                                            text = { Text(label) },
-                                            onClick = {
-                                                currencySymbol = symbol
-                                                showCurrencyMenu = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
+                            )
 
                             OutlinedTextField(
                                 value = ratePerCubicMeter,
                                 onValueChange = { ratePerCubicMeter = it },
                                 label = { Text("Rate / m³") },
-                                modifier = Modifier.weight(0.6f),
+                                modifier = Modifier.weight(0.7f),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                             )
                         }
@@ -234,7 +215,7 @@ fun WaterBillScreen(
                         Button(
                             onClick = {
                                 viewModel.calculate(
-                                    billingMonth, billingYear, previousReading, currentReading, ratePerCubicMeter, currencySymbol
+                                    billingMonth, billingYear, previousReading, currentReading, ratePerCubicMeter
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(),

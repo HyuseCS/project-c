@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.hyuse.projectc.domain.model.AppConstants
 import com.hyuse.projectc.domain.model.User
 
 /**
@@ -19,7 +20,7 @@ import com.hyuse.projectc.domain.model.User
 fun ProfileScreen(
     user: User,
     profileState: ProfileState,
-    onSave: (name: String, nickname: String, university: String, course: String) -> Unit,
+    onSave: (name: String, nickname: String, university: String, course: String, currencySymbol: String) -> Unit,
     onBack: () -> Unit,
     onClearError: () -> Unit,
     onSaveSuccess: () -> Unit
@@ -28,6 +29,10 @@ fun ProfileScreen(
     var nickname by rememberStringState("")
     var university by rememberStringState("")
     var course by rememberStringState("")
+    var currencySymbol by rememberStringState("₱")
+
+    // Dropdown state
+    var currencyExpanded by remember { mutableStateOf(false) }
 
     // Update fields when profile is loaded
     LaunchedEffect(profileState) {
@@ -36,6 +41,7 @@ fun ProfileScreen(
             nickname = profileState.profile.nickname ?: ""
             university = profileState.profile.university
             course = profileState.profile.course
+            currencySymbol = profileState.profile.currencySymbol
         } else if (profileState is ProfileState.SaveSuccess) {
             onSaveSuccess()
         }
@@ -115,10 +121,42 @@ fun ProfileScreen(
                     placeholder = { Text("What are you studying?") }
                 )
 
+                // Currency Selection
+                ExposedDropdownMenuBox(
+                    expanded = currencyExpanded,
+                    onExpandedChange = { currencyExpanded = !currencyExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val currentCurrencyName = AppConstants.currencies.find { it.second == currencySymbol }?.first ?: currencySymbol
+                    OutlinedTextField(
+                        value = currentCurrencyName,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Preferred Currency") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = currencyExpanded,
+                        onDismissRequest = { currencyExpanded = false }
+                    ) {
+                        AppConstants.currencies.forEach { (name, symbol) ->
+                            DropdownMenuItem(
+                                text = { Text(name) },
+                                onClick = {
+                                    currencySymbol = symbol
+                                    currencyExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { onSave(name, nickname, university, course) },
+                    onClick = { onSave(name, nickname, university, course, currencySymbol) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     enabled = profileState !is ProfileState.Loading

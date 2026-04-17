@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hyuse.projectc.domain.model.ElectricityAppliance
 import com.hyuse.projectc.domain.usecase.GetElectricityBillHistoryUseCase
+import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ data class PredictorSummary(
 )
 
 class ElectricityPredictorViewModel(
-    private val getHistoryUseCase: GetElectricityBillHistoryUseCase
+    private val getHistoryUseCase: GetElectricityBillHistoryUseCase,
+    private val observeProfileUseCase: ObserveProfileUseCase
 ) : ViewModel() {
 
     private val _appliances = MutableStateFlow<List<ElectricityAppliance>>(emptyList())
@@ -45,16 +47,6 @@ class ElectricityPredictorViewModel(
         initialValue = PredictorSummary()
     )
 
-    // Predefined list of currencies for the dropdown
-    val currencies = listOf(
-        "₱ (Philippines)" to "₱",
-        "$ (USA)" to "$",
-        "€ (Eurozone)" to "€",
-        "£ (UK)" to "£",
-        "¥ (Japan)" to "¥",
-        "₩ (South Korea)" to "₩"
-    )
-
     private var hasLoadedPreferences = false
 
     fun loadPreferences(uid: String) {
@@ -65,11 +57,16 @@ class ElectricityPredictorViewModel(
                 val latest = history.maxWithOrNull(compareBy({ it.billingYear }, { it.billingMonth }))
                 if (latest != null) {
                     _ratePerKwh.value = latest.ratePerKwh
-                    _currencySymbol.value = latest.currencySymbol
                 }
                 hasLoadedPreferences = true
             } catch (e: Exception) {
                 // Silently fail, user can manually input configs
+            }
+        }
+
+        viewModelScope.launch {
+            observeProfileUseCase(uid).collect { profile ->
+                _currencySymbol.value = profile?.currencySymbol ?: "₱"
             }
         }
     }
@@ -78,10 +75,6 @@ class ElectricityPredictorViewModel(
         if (rate >= 0) {
             _ratePerKwh.value = rate
         }
-    }
-
-    fun updateCurrency(symbol: String) {
-        _currencySymbol.value = symbol
     }
 
     fun addAppliance(

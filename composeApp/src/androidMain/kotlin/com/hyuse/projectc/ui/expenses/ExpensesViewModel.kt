@@ -8,6 +8,7 @@ import com.hyuse.projectc.domain.usecase.AddExpenseUseCase
 import com.hyuse.projectc.domain.usecase.DeleteExpenseUseCase
 import com.hyuse.projectc.domain.usecase.GetMergedCategoriesUseCase
 import com.hyuse.projectc.domain.usecase.ObserveMonthlyExpensesUseCase
+import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
 import com.hyuse.projectc.domain.usecase.SaveCustomCategoryUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -29,13 +30,15 @@ sealed class ExpensesState {
         val dailyGroups: List<DayExpenses>,
         val currentMonth: Int,
         val currentYear: Int,
-        val categories: List<ExpenseCategory>
+        val categories: List<ExpenseCategory>,
+        val currencySymbol: String
     ) : ExpensesState()
     data class Error(val message: String) : ExpensesState()
 }
 
 class ExpensesViewModel(
     private val observeMonthlyExpensesUseCase: ObserveMonthlyExpensesUseCase,
+    private val observeProfileUseCase: ObserveProfileUseCase,
     private val addExpenseUseCase: AddExpenseUseCase,
     private val deleteExpenseUseCase: DeleteExpenseUseCase,
     private val getMergedCategoriesUseCase: GetMergedCategoriesUseCase,
@@ -77,9 +80,11 @@ class ExpensesViewModel(
         viewModelScope.launch {
             combine(
                 observeMonthlyExpensesUseCase(currentUid, startTime, endTime),
-                getMergedCategoriesUseCase(currentUid)
-            ) { expenses, categories ->
+                getMergedCategoriesUseCase(currentUid),
+                observeProfileUseCase(currentUid)
+            ) { expenses, categories, profile ->
                 val totalMonthly = expenses.sumOf { it.amount }
+                val currencySymbol = profile?.currencySymbol ?: "₱"
                 
                 val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                 val grouped = expenses.groupBy { 
@@ -101,7 +106,8 @@ class ExpensesViewModel(
                     dailyGroups = grouped,
                     currentMonth = currentMonth,
                     currentYear = currentYear,
-                    categories = categories
+                    categories = categories,
+                    currencySymbol = currencySymbol
                 )
             }.catch { e ->
                 _state.value = ExpensesState.Error(e.message ?: "Unknown error")

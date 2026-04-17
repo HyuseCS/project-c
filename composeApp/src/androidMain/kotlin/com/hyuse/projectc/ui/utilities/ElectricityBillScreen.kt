@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -17,9 +16,7 @@ import androidx.compose.ui.unit.dp
 import android.widget.Toast
 import com.hyuse.projectc.domain.model.ElectricityBillResult
 import org.koin.compose.viewmodel.koinViewModel
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 /**
@@ -32,8 +29,8 @@ fun ElectricityBillScreen(
     uiState: ElectricBillUiState,
     history: List<ElectricityBillResult>,
     lastRate: Double?,
-    lastCurrency: String,
-    onCalculate: (month: Int, year: Int, previousReading: String, currentReading: String, rate: String, currency: String) -> Unit,
+    currencySymbol: String,
+    onCalculate: (month: Int, year: Int, previousReading: String, currentReading: String, rate: String) -> Unit,
     onSave: (forceOverwrite: Boolean, overwriteId: String?) -> Unit,
     onNavigateToHistory: () -> Unit,
     onResetState: () -> Unit,
@@ -47,7 +44,6 @@ fun ElectricityBillScreen(
     var previousReading by remember { mutableStateOf("") }
     var currentReading by remember { mutableStateOf("") }
     var ratePerKwh by remember { mutableStateOf(lastRate?.toString() ?: "") }
-    var currencySymbol by remember { mutableStateOf(lastCurrency) }
 
     val months = listOf(
         "January", "February", "March", "April", "May", "June",
@@ -61,12 +57,11 @@ fun ElectricityBillScreen(
         if (prev.isNotEmpty()) previousReading = prev
     }
 
-    // Auto-fill rate and currency on initial load when history becomes available
+    // Auto-fill rate on initial load when history becomes available
     LaunchedEffect(history) {
         if (history.isNotEmpty() && ratePerKwh.isEmpty()) {
             val mostRecent = history.first()
             ratePerKwh = mostRecent.ratePerKwh.toString()
-            currencySymbol = mostRecent.currencySymbol
         }
     }
 
@@ -207,36 +202,19 @@ fun ElectricityBillScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                var currencyExpanded by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = currencyExpanded,
-                    onExpandedChange = { currencyExpanded = !currencyExpanded },
-                    modifier = Modifier.width(120.dp)
-                ) {
-                    OutlinedTextField(
-                        readOnly = true,
-                        value = currencySymbol,
-                        onValueChange = {},
-                        label = { Text("Currency") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier.menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = currencyExpanded,
-                        onDismissRequest = { currencyExpanded = false }
-                    ) {
-                        viewModel.currencies.forEach { (name, sym) ->
-                            DropdownMenuItem(
-                                text = { Text(name) },
-                                onClick = {
-                                    currencySymbol = sym
-                                    currencyExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                OutlinedTextField(
+                    readOnly = true,
+                    value = currencySymbol,
+                    onValueChange = {},
+                    label = { Text("Currency") },
+                    modifier = Modifier.width(100.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline
+                    ),
+                    enabled = false
+                )
 
                 OutlinedTextField(
                     value = ratePerKwh,
@@ -250,7 +228,7 @@ fun ElectricityBillScreen(
 
             Button(
                 onClick = {
-                    onCalculate(selectedMonth, selectedYear, previousReading, currentReading, ratePerKwh, currencySymbol)
+                    onCalculate(selectedMonth, selectedYear, previousReading, currentReading, ratePerKwh)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,

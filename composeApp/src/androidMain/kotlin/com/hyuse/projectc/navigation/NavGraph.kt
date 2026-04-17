@@ -169,14 +169,15 @@ fun NavGraph(navController: NavHostController) {
                 ProfileScreen(
                     user = user,
                     profileState = profileState,
-                    onSave = { name, nickname, university, course ->
+                    onSave = { name, nickname, university, course, currencySymbol ->
                         profileViewModel.saveProfile(
                             uid = user.uid,
                             name = name,
                             nickname = nickname,
                             email = user.email,
                             university = university,
-                            course = course
+                            course = course,
+                            currencySymbol = currencySymbol
                         )
                     },
                     onBack = {
@@ -249,6 +250,7 @@ fun NavGraph(navController: NavHostController) {
                 val viewModel: ElectricityBillViewModel = koinViewModel()
                 val uiState by viewModel.uiState.collectAsState()
                 val history by viewModel.history.collectAsState()
+                val currencySymbol by viewModel.currencySymbol.collectAsState()
 
                 LaunchedEffect(user.uid) {
                     viewModel.loadHistory(user.uid)
@@ -258,9 +260,9 @@ fun NavGraph(navController: NavHostController) {
                     uiState = uiState,
                     history = history,
                     lastRate = viewModel.getLastRate(),
-                    lastCurrency = viewModel.getLastCurrency(),
-                    onCalculate = { month, year, prev, curr, rate, currency ->
-                        viewModel.calculate(month, year, prev, curr, rate, currency)
+                    currencySymbol = currencySymbol,
+                    onCalculate = { month, year, prev, curr, rate ->
+                        viewModel.calculate(month, year, prev, curr, rate)
                     },
                     onSave = { forceOverwrite, overwriteId ->
                         viewModel.saveResult(user.uid, forceOverwrite, overwriteId)
@@ -329,10 +331,6 @@ fun NavGraph(navController: NavHostController) {
                     onRateChanged = { rate ->
                         viewModel.updateRate(rate)
                     },
-                    onCurrencyChanged = { symbol ->
-                        viewModel.updateCurrency(symbol)
-                    },
-                    currencies = viewModel.currencies,
                     onBack = {
                         navController.popBackStack()
                     }

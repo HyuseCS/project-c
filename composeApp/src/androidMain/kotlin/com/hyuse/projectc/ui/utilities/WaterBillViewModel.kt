@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hyuse.projectc.domain.model.WaterBillResult
 import com.hyuse.projectc.domain.usecase.CalculateWaterBillUseCase
 import com.hyuse.projectc.domain.usecase.GetWaterBillHistoryUseCase
+import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
 import com.hyuse.projectc.domain.usecase.SaveWaterBillUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,8 @@ sealed class WaterBillUiState {
 class WaterBillViewModel(
     private val calculateUseCase: CalculateWaterBillUseCase,
     private val saveUseCase: SaveWaterBillUseCase,
-    private val getHistoryUseCase: GetWaterBillHistoryUseCase
+    private val getHistoryUseCase: GetWaterBillHistoryUseCase,
+    private val observeProfileUseCase: ObserveProfileUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<WaterBillUiState>(WaterBillUiState.Idle)
@@ -38,16 +40,10 @@ class WaterBillViewModel(
     private val _history = MutableStateFlow<List<WaterBillResult>>(emptyList())
     val history: StateFlow<List<WaterBillResult>> = _history.asStateFlow()
 
-    private var lastResult: WaterBillResult? = null
+    private val _currencySymbol = MutableStateFlow("₱")
+    val currencySymbol: StateFlow<String> = _currencySymbol.asStateFlow()
 
-    val currencies = listOf(
-        "₱ (Philippines)" to "₱",
-        "$ (USA)" to "$",
-        "€ (Eurozone)" to "€",
-        "£ (UK)" to "£",
-        "¥ (Japan)" to "¥",
-        "₩ (South Korea)" to "₩"
-    )
+    private var lastResult: WaterBillResult? = null
 
     fun loadHistory(uid: String) {
         viewModelScope.launch {
@@ -57,10 +53,15 @@ class WaterBillViewModel(
                 // Silently fail
             }
         }
+
+        viewModelScope.launch {
+            observeProfileUseCase(uid).collect { profile ->
+                _currencySymbol.value = profile?.currencySymbol ?: "₱"
+            }
+        }
     }
 
     fun getLastRate(): Double? = _history.value.firstOrNull()?.ratePerCubicMeter
-    fun getLastCurrency(): String = _history.value.firstOrNull()?.currencySymbol ?: "₱"
 
     fun getPreviousReadingFor(month: Int, year: Int): String {
         val prevBill = _history.value
@@ -75,8 +76,7 @@ class WaterBillViewModel(
         billingYear: Int,
         previousReading: String,
         currentReading: String,
-        ratePerCubicMeter: String,
-        currencySymbol: String
+        ratePerCubicMeter: String
     ) {
         val prev = previousReading.toDoubleOrNull()
         val curr = currentReading.toDoubleOrNull()
@@ -103,7 +103,7 @@ class WaterBillViewModel(
             previousReading = prev,
             currentReading = curr,
             ratePerCubicMeter = rate,
-            currencySymbol = currencySymbol.ifBlank { "₱" },
+            currencySymbol = _currencySymbol.value,
             timestamp = System.currentTimeMillis()
         )
         lastResult = result
