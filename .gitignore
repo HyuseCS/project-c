@@ -22,7 +22,10 @@ node_modules/
 **/google-services.json
 **/GoogleService-Info.plist
 
+/privatekey/*
+/scripts/*
 /planning/*
+
 # Memory
 memory.md
 completed_phases_plan.md

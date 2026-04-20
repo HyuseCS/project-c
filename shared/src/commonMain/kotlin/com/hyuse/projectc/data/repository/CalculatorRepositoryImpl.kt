@@ -19,10 +19,10 @@ class CalculatorRepositoryImpl(
 ) : CalculatorRepository {
 
     private fun electricityCalculatorsCollection(uid: String) =
-        firestore.collection("users").document(uid).collection("calculators")
+        firestore.collection("users").document(uid).collection("electricity_bill_history")
 
     private fun waterCalculatorsCollection(uid: String) =
-        firestore.collection("users").document(uid).collection("water_calculators")
+        firestore.collection("users").document(uid).collection("water_bill_history")
 
     override suspend fun saveElectricityBill(uid: String, result: ElectricityBillResult) {
         val docRef = if (result.id.isNotEmpty()) {
