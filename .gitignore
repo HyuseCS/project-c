@@ -22,10 +22,9 @@ node_modules/
 **/google-services.json
 **/GoogleService-Info.plist
 
-/privatekey/*
-/scripts/*
 /planning/*
-
+#/graphify-out/*
+.antigravitycli/*
 # Memory
 memory.md
 completed_phases_plan.md

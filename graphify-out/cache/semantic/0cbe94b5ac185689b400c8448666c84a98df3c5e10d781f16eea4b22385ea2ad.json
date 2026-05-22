@@ -1,0 +1,1 @@
+{"nodes": [{"id": "electricityappliance_electricityappliance", "label": "ElectricityAppliance", "file_type": "code", "source_file": "shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/ElectricityAppliance.kt"}], "edges": [], "hyperedges": []}

@@ -1,0 +1,1 @@
+{"nodes": [{"id": "expensecategory_expensecategory", "label": "ExpenseCategory", "file_type": "code", "source_file": "shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/ExpenseCategory.kt"}], "edges": [], "hyperedges": []}

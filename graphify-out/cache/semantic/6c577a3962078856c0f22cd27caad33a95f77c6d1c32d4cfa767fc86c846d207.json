@@ -1,0 +1,1 @@
+{"nodes": [{"id": "electricitybillresult_electricitybillresult", "label": "ElectricityBillResult", "file_type": "code", "source_file": "shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/ElectricityBillResult.kt"}], "edges": [], "hyperedges": []}
