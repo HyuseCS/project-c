@@ -1,12 +1,19 @@
 package com.hyuse.projectc.ui.utilities
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,6 +27,7 @@ import java.util.Locale
 @Composable
 fun WaterBillHistoryScreen(
     history: List<WaterBillResult>,
+    onDelete: (String) -> Unit,
     onBack: () -> Unit
 ) {
     val months = listOf(
@@ -64,9 +72,56 @@ fun WaterBillHistoryScreen(
                 contentPadding = PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(history) { result ->
-                    val periodText = "${months[result.billingMonth - 1]} ${result.billingYear}"
-                    HistoryCard(result = result, periodText = periodText)
+                items(
+                    items = history,
+                    key = { it.id }
+                ) { result ->
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = {
+                            if (it == SwipeToDismissBoxValue.EndToStart) {
+                                onDelete(result.id)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                    )
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            val color by animateColorAsState(
+                                when (dismissState.targetValue) {
+                                    SwipeToDismissBoxValue.EndToStart -> Color.Red.copy(alpha = 0.8f)
+                                    else -> Color.Transparent
+                                }, label = "color"
+                            )
+                            val alignment = Alignment.CenterEnd
+                            val scale by animateFloatAsState(
+                                if (dismissState.targetValue == SwipeToDismissBoxValue.Settled) 0.75f else 1f,
+                                label = "scale"
+                            )
+
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(color, RoundedCornerShape(12.dp))
+                                    .padding(horizontal = 24.dp),
+                                contentAlignment = alignment
+                            ) {
+                                Text(
+                                    "🗑️",
+                                    modifier = Modifier.scale(scale),
+                                    fontSize = 24.sp
+                                )
+                            }
+                        },
+                        content = {
+                            val periodText = "${months[result.billingMonth - 1]} ${result.billingYear}"
+                            HistoryCard(result = result, periodText = periodText)
+                        }
+                    )
                 }
             }
         }

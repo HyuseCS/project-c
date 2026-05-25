@@ -3,10 +3,7 @@ package com.hyuse.projectc.ui.utilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hyuse.projectc.domain.model.WaterBillResult
-import com.hyuse.projectc.domain.usecase.CalculateWaterBillUseCase
-import com.hyuse.projectc.domain.usecase.GetWaterBillHistoryUseCase
-import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
-import com.hyuse.projectc.domain.usecase.SaveWaterBillUseCase
+import com.hyuse.projectc.domain.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +28,8 @@ class WaterBillViewModel(
     private val calculateUseCase: CalculateWaterBillUseCase,
     private val saveUseCase: SaveWaterBillUseCase,
     private val getHistoryUseCase: GetWaterBillHistoryUseCase,
-    private val observeProfileUseCase: ObserveProfileUseCase
+    private val observeProfileUseCase: ObserveProfileUseCase,
+    private val deleteUseCase: DeleteWaterBillUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<WaterBillUiState>(WaterBillUiState.Idle)
@@ -131,6 +129,17 @@ class WaterBillViewModel(
                 _history.value = getHistoryUseCase(uid)
             } catch (e: Exception) {
                 _uiState.value = WaterBillUiState.Error(e.message ?: "Failed to save calculation.")
+            }
+        }
+    }
+
+    fun deleteBill(uid: String, resultId: String) {
+        viewModelScope.launch {
+            try {
+                deleteUseCase(uid, resultId)
+                _history.value = getHistoryUseCase(uid)
+            } catch (e: Exception) {
+                _uiState.value = WaterBillUiState.Error("Failed to delete calculation.")
             }
         }
     }

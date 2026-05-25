@@ -1,15 +1,22 @@
 package com.hyuse.projectc.ui.utilities
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hyuse.projectc.domain.model.ElectricityBillResult
 import java.util.Locale
 
@@ -20,6 +27,7 @@ import java.util.Locale
 @Composable
 fun ElectricityBillHistoryScreen(
     history: List<ElectricityBillResult>,
+    onDelete: (String) -> Unit,
     onBack: () -> Unit
 ) {
     val months = listOf(
@@ -57,12 +65,60 @@ fun ElectricityBillHistoryScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                items(history) { item ->
-                    val monthName = months[item.billingMonth - 1]
-                    HistoryCard(item, "$monthName ${item.billingYear}")
+                items(
+                    items = history,
+                    key = { it.id }
+                ) { item ->
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = {
+                            if (it == SwipeToDismissBoxValue.EndToStart) {
+                                onDelete(item.id)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                    )
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            val color by animateColorAsState(
+                                when (dismissState.targetValue) {
+                                    SwipeToDismissBoxValue.EndToStart -> Color.Red.copy(alpha = 0.8f)
+                                    else -> Color.Transparent
+                                }, label = "color"
+                            )
+                            val alignment = Alignment.CenterEnd
+                            val scale by animateFloatAsState(
+                                if (dismissState.targetValue == SwipeToDismissBoxValue.Settled) 0.75f else 1f,
+                                label = "scale"
+                            )
+
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(color, RoundedCornerShape(12.dp))
+                                    .padding(horizontal = 24.dp),
+                                contentAlignment = alignment
+                            ) {
+                                Text(
+                                    "🗑️",
+                                    modifier = Modifier.scale(scale),
+                                    fontSize = 24.sp
+                                )
+                            }
+                        },
+                        content = {
+                            val monthName = months[item.billingMonth - 1]
+                            HistoryCard(item, "$monthName ${item.billingYear}")
+                        }
+                    )
                 }
             }
         }

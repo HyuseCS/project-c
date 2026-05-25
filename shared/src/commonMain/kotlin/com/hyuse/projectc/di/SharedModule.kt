@@ -38,11 +38,13 @@ val sharedModule = module {
     factory { SaveElectricityBillUseCase(get()) }
     factory { GetElectricityBillHistoryUseCase(get()) }
     factory { ObserveElectricityBillHistoryUseCase(get()) }
+    factory { DeleteElectricityBillUseCase(get()) }
 
     factory { CalculateWaterBillUseCase() }
     factory { SaveWaterBillUseCase(get()) }
     factory { GetWaterBillHistoryUseCase(get()) }
     factory { ObserveWaterBillHistoryUseCase(get()) }
+    factory { DeleteWaterBillUseCase(get()) }
 
     // Expense use cases — factory
     factory { AddExpenseUseCase(get()) }

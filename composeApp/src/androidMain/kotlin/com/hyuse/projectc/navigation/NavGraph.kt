@@ -228,6 +228,7 @@ fun NavGraph(navController: NavHostController) {
 
                 WaterBillHistoryScreen(
                     history = history,
+                    onDelete = { id -> viewModel.deleteBill(user.uid, id) },
                     onBack = {
                         navController.popBackStack()
                     }
@@ -288,6 +289,7 @@ fun NavGraph(navController: NavHostController) {
 
                 ElectricityBillHistoryScreen(
                     history = history,
+                    onDelete = { id -> viewModel.deleteBill(user.uid, id) },
                     onBack = {
                         navController.popBackStack()
                     }
