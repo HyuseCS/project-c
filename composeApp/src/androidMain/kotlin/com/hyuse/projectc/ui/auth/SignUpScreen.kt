@@ -29,6 +29,10 @@ import androidx.compose.ui.unit.sp
  * Sign Up screen with email, password, and confirm password fields.
  * Navigates to Home on success, or back to Login via text link.
  */
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.RectangleShape
+
 @Composable
 fun SignUpScreen(
     authState: AuthState,
@@ -42,32 +46,21 @@ fun SignUpScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Show snackbar for errors
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(authState) {
         if (authState is AuthState.Error) {
-            snackbarHostState.showSnackbar(
-                message = authState.message,
-                duration = SnackbarDuration.Short
-            )
+            snackbarHostState.showSnackbar(message = authState.message)
             onClearError()
         }
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.08f),
-                            MaterialTheme.colorScheme.surface
-                        )
-                    )
-                )
                 .padding(paddingValues)
         ) {
             Column(
@@ -79,11 +72,8 @@ fun SignUpScreen(
             ) {
                 Spacer(modifier = Modifier.height(60.dp))
 
-                // Header
-                Text(
-                    text = "🎓",
-                    fontSize = 64.sp
-                )
+                // Friendly Branding
+                Text(text = "🎓", fontSize = 64.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Create Account",
@@ -97,35 +87,26 @@ fun SignUpScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(48.dp))
 
-                // Sign Up card
+                // SignUp Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(28.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
+                        modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "Get Started",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Create your account to get started",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Email field
@@ -169,7 +150,8 @@ fun SignUpScreen(
                                 TextButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Text(
                                         text = if (passwordVisible) "Hide" else "Show",
-                                        style = MaterialTheme.typography.labelSmall
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold
                                     )
                                 }
                             },
@@ -204,19 +186,9 @@ fun SignUpScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        // Password hint
-                        Text(
-                            text = "Must be at least 6 characters",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 8.dp, top = 4.dp)
-                        )
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Sign Up button
+                        // SignUp button
                         Button(
                             onClick = {
                                 focusManager.clearFocus()
@@ -225,29 +197,20 @@ fun SignUpScreen(
                             enabled = authState !is AuthState.Loading,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(52.dp),
+                                .height(56.dp),
                             shape = RoundedCornerShape(16.dp)
                         ) {
-                            AnimatedVisibility(
-                                visible = authState is AuthState.Loading,
-                                enter = fadeIn(),
-                                exit = fadeOut()
-                            ) {
+                            if (authState is AuthState.Loading) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(24.dp),
                                     color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
+                                    strokeWidth = 3.dp
                                 )
-                            }
-                            AnimatedVisibility(
-                                visible = authState !is AuthState.Loading,
-                                enter = fadeIn(),
-                                exit = fadeOut()
-                            ) {
+                            } else {
                                 Text(
                                     text = "Create Account",
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }

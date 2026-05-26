@@ -1,5 +1,6 @@
 package com.hyuse.projectc.ui.utilities
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -9,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
 
 /**
  * Utilities Hub screen — lists available utility tools.
@@ -24,12 +28,22 @@ fun UtilitiesHubScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Utilities", fontWeight = FontWeight.Bold) },
+                title = { 
+                    Text(
+                        "UTILITIES", 
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.titleLarge,
+                        letterSpacing = 2.sp
+                    ) 
+                },
                 actions = {
                     TextButton(onClick = onBack) {
-                        Text("Back")
+                        Text("CLOSE", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { paddingValues ->
@@ -37,97 +51,78 @@ fun UtilitiesHubScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
             Text(
-                text = "Choose a utility",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "OPERATIONAL TOOLS",
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             // Electricity Bill Calculator
-            UtilityCard(
+            UtilityLucidItem(
                 emoji = "⚡",
-                title = "Electricity Bill Calculator",
-                subtitle = "Calculate from meter readings",
-                enabled = true,
+                title = "Electricity",
+                description = "ANALYZE METER READINGS",
                 onClick = onNavigateToElectricityCalculator
             )
 
             // Electricity Usage Predictor
-            UtilityCard(
+            UtilityLucidItem(
                 emoji = "🔮",
-                title = "Electricity Usage Predictor",
-                subtitle = "Estimate based on appliances",
-                enabled = true,
+                title = "Predictor",
+                description = "ESTIMATE APPLIANCE LOAD",
                 onClick = onNavigateToElectricityPredictor
             )
 
             // Water Bill Calculator
-            UtilityCard(
+            UtilityLucidItem(
                 emoji = "💧",
-                title = "Water Bill Calculator",
-                subtitle = "Calculate from meter readings",
-                enabled = true,
+                title = "Water",
+                description = "TRACK CONSUMPTION TRENDS",
                 onClick = onNavigateToWaterCalculator
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UtilityCard(
+private fun UtilityLucidItem(
     emoji: String,
     title: String,
-    subtitle: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    description: String,
+    onClick: () -> Unit
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        enabled = enabled,
-        colors = CardDefaults.cardColors(
-            containerColor = if (enabled)
-                MaterialTheme.colorScheme.primaryContainer
-            else
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .size(64.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
         ) {
             Text(text = emoji, fontSize = 32.sp)
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (enabled)
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (enabled)
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-            }
+        }
+        Column {
+            Text(
+                text = title.uppercase(),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.5).sp
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
