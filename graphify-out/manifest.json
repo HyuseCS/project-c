@@ -12,7 +12,7 @@
     "hash": "c1dbe2578a42f0e02716dfa56ff70f5a"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/build.gradle.kts": {
-    "mtime": 1776268204.5538194,
+    "mtime": 1779721671.9684796,
     "hash": "e6f7a9eb2a3a88ec5d17389e2a622deb"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/App.kt": {
@@ -32,24 +32,24 @@
     "hash": "d6f03ef70a97fe41b1b971dd50ff8eb5"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/auth/LoginScreen.kt": {
-    "mtime": 1775718731.9532533,
-    "hash": "fcfcba908868edb1fb63bcff8ef139af"
+    "mtime": 1779768163.1814373,
+    "hash": "c03c1114e43b77cc630092ed76352638"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/auth/SignUpScreen.kt": {
-    "mtime": 1775718747.1713057,
-    "hash": "ba4c2631315205781d2cf80051616e5a"
+    "mtime": 1779768178.8092299,
+    "hash": "f2ee1576d34f6104489d0a93fad338e8"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeScreen.kt": {
-    "mtime": 1776696764.8579586,
-    "hash": "d878a185624eafb8b238b95f770968a3"
+    "mtime": 1779853493.05046,
+    "hash": "b691c1db11c2631a937d04d5ae6a8ab0"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeViewModel.kt": {
-    "mtime": 1776696764.8579586,
-    "hash": "a8f8f546706f0c5cfd5cbe1ed09a5ebd"
+    "mtime": 1779852687.904362,
+    "hash": "5e1e606c855fdebf5b15c0e45320871b"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/theme/Theme.kt": {
-    "mtime": 1775718779.398416,
-    "hash": "9bcbbefcc10ac51391a51c09eee0adfd"
+    "mtime": 1779853011.0768905,
+    "hash": "b668899c3ab15f6706b8d07345a6e138"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/profile/ProfileViewModel.kt": {
     "mtime": 1776389896.065851,
@@ -60,32 +60,32 @@
     "hash": "27a9286164a27be1033e2289888c30fd"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillViewModel.kt": {
-    "mtime": 1776390023.0844219,
-    "hash": "86c45dabd805799224b843a38a2be283"
+    "mtime": 1779717270.604089,
+    "hash": "931c7c7da7b20e8e28190f3c3cccad88"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/UtilitiesHubScreen.kt": {
-    "mtime": 1776267651.8876364,
-    "hash": "7c1eaad1b9be71b35db87afc55955371"
+    "mtime": 1779768740.5042636,
+    "hash": "33d9f0b234b74deef2f3095c913d12b7"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillScreen.kt": {
     "mtime": 1776390073.8796103,
     "hash": "3793cce0fbbdd02428a900c53695a675"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillHistoryScreen.kt": {
-    "mtime": 1775795341.8087387,
-    "hash": "55e09810f3725b957c44ffb013861689"
+    "mtime": 1779721693.6015477,
+    "hash": "684bd9a980c9f26ec9fb4847bcd7eb39"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillViewModel.kt": {
-    "mtime": 1776390034.043466,
-    "hash": "4e58210b62192a98cc34f33e30e2ea4d"
+    "mtime": 1779717292.135292,
+    "hash": "4caf31436af5f41471ab511c0f334a86"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillScreen.kt": {
     "mtime": 1776390098.523083,
     "hash": "e43030d111c345c41e21faeb6a69c2a0"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillHistoryScreen.kt": {
-    "mtime": 1776268473.0043569,
-    "hash": "b3d899c777a4ed3db6fc182481cb6cc3"
+    "mtime": 1779721704.185581,
+    "hash": "aa189d215052027be1a1050cddb9a7a3"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/predictor/ElectricityPredictorViewModel.kt": {
     "mtime": 1776390043.2907104,
@@ -100,8 +100,8 @@
     "hash": "6f55593225c64aa86525a5a4db120f5d"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/ExpensesDashboardScreen.kt": {
-    "mtime": 1776389999.3923197,
-    "hash": "c80bb5341e768aee3c0f96b9bed9cb1d"
+    "mtime": 1779768727.9243383,
+    "hash": "b0f93164651902d1cb0e7f69917d59e6"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/AddExpenseScreen.kt": {
     "mtime": 1776358961.9871776,
@@ -112,12 +112,12 @@
     "hash": "b926a4adbeff8b16840505ddc1796912"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/navigation/NavGraph.kt": {
-    "mtime": 1776696764.8579586,
-    "hash": "f9da7093fe30871acada19350812daff"
+    "mtime": 1779852447.214745,
+    "hash": "b0aa6e5608f8b9d475e4d61d42265e52"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/di/AppModule.kt": {
-    "mtime": 1776696764.8579586,
-    "hash": "d8740d99cc6977c442f7b1c83f2c769d"
+    "mtime": 1779852344.3608646,
+    "hash": "d7e1d13ea9a8e29308ca54627326a57f"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidUnitTest/kotlin/com/hyuse/projectc/ComposeAppAndroidUnitTest.kt": {
     "mtime": 1775686312.0,
@@ -275,6 +275,14 @@
     "mtime": 1776696764.8581192,
     "hash": "8f11da9eac22f1579bac4ead29691be0"
   },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/usecase/DeleteElectricityBillUseCase.kt": {
+    "mtime": 1779717128.2153244,
+    "hash": "14e0adc3cdf24636f8136e1370180246"
+  },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/usecase/DeleteWaterBillUseCase.kt": {
+    "mtime": 1779717218.620162,
+    "hash": "bd23790e9d24bd548a5e2235ac030dcf"
+  },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/data/repository/AuthRepositoryImpl.kt": {
     "mtime": 1775718667.4210303,
     "hash": "6fbdefd90746cfc68aeffaea36d6bd86"
@@ -292,8 +300,8 @@
     "hash": "991c46ddf2364cc23c958be1261e7258"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/di/SharedModule.kt": {
-    "mtime": 1776696764.8581192,
-    "hash": "5c3123a2bdbc9489c8502d95c38b38f8"
+    "mtime": 1779717227.920775,
+    "hash": "5038a5344c37d9eb07c5af9581f6fe3b"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonTest/kotlin/com/hyuse/projectc/SharedCommonTest.kt": {
     "mtime": 1775686312.0,
@@ -319,6 +327,18 @@
     "mtime": 1776612452.0,
     "hash": "66e309434334d0ecef03d3dc60b4838f"
   },
+  "/home/hyuse/Desktop/Project_C/PRODUCT.md": {
+    "mtime": 1779768593.7082105,
+    "hash": "fb158d33b93aaee6c993288281b3a22c"
+  },
+  "/home/hyuse/Desktop/Project_C/DESIGN.md": {
+    "mtime": 1779768606.2631223,
+    "hash": "32fa7e25a8c30848a70abf5745e5ce59"
+  },
+  "/home/hyuse/Desktop/Project_C/Audit.md": {
+    "mtime": 1779850476.7735803,
+    "hash": "999b6bd77e0da1c89491db8e598bb451"
+  },
   "/home/hyuse/Desktop/Project_C/planning/phase2_plan.md": {
     "mtime": 1775789027.002452,
     "hash": "6473e701f8732013a13148201453f879"
@@ -338,6 +358,10 @@
   "/home/hyuse/Desktop/Project_C/planning/phase6_expenses_plan.md": {
     "mtime": 1776390162.5962346,
     "hash": "5528b590f60f38da19156f43a395be13"
+  },
+  "/home/hyuse/Desktop/Project_C/planning/phase7_audit_fixes_plan.md": {
+    "mtime": 1779852164.3969417,
+    "hash": "7d1945287ee2a5ea4426f7d561955189"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/res/mipmap-hdpi/ic_launcher.png": {
     "mtime": 1775686312.0,

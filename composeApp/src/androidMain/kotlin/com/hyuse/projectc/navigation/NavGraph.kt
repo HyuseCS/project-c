@@ -142,6 +142,12 @@ fun NavGraph(navController: NavHostController) {
                     },
                     onNavigateToExpenses = {
                         navController.navigate(Routes.EXPENSES_DASHBOARD)
+                    },
+                    onQuickAddExpense = { amount, category ->
+                        homeViewModel.quickAddExpense(amount, category)
+                    },
+                    onToggleInlineQuickAdd = { visible ->
+                        homeViewModel.setInlineQuickAddExpenseVisible(visible)
                     }
                 )
             }

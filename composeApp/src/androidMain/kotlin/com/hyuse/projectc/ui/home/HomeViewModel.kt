@@ -22,7 +22,7 @@ data class RecentActivity(val title: String, val subtitle: String, val date: Lon
 data class ActionItem(val title: String, val subtitle: String, val emoji: String, val route: String)
 
 sealed class DashboardWidget {
-    data class WelcomeWidget(val nickname: String?, val name: String) : DashboardWidget()
+    data class WelcomeWidget(val nickname: String?, val name: String, val greeting: String = "HELLO,", val actionableSummary: String? = null) : DashboardWidget()
     data class ElectricityGraphWidget(val dataPoints: List<MonthlyUsage>) : DashboardWidget()
     data class WaterUsageWidget(val dataPoints: List<MonthlyUsage>) : DashboardWidget()
     data class ExpenseSummaryWidget(val summary: ExpenseSummary) : DashboardWidget()
@@ -39,6 +39,7 @@ data class HomeState(
     val widgets: List<DashboardWidget> = emptyList(),
     val availableWidgets: List<String> = listOf("welcome", "electricity", "water", "expenses", "activity", "actions"),
     val activeWidgets: List<String> = emptyList(),
+    val showInlineQuickAddExpense: Boolean = false,
     val error: String? = null
 )
 
@@ -51,13 +52,34 @@ class HomeViewModel(
     private val observeElectricityBillHistoryUseCase: ObserveElectricityBillHistoryUseCase,
     private val observeWaterBillHistoryUseCase: ObserveWaterBillHistoryUseCase,
     private val observeMonthlyExpensesUseCase: ObserveMonthlyExpensesUseCase,
-    private val saveProfileUseCase: SaveProfileUseCase
+    private val saveProfileUseCase: SaveProfileUseCase,
+    private val addExpenseUseCase: AddExpenseUseCase
 ) : ViewModel() {
 
     private val _homeState = MutableStateFlow(HomeState())
     val homeState: StateFlow<HomeState> = _homeState.asStateFlow()
 
     private var currentProfile: UserProfile? = null
+    
+    fun setInlineQuickAddExpenseVisible(visible: Boolean) {
+        _homeState.update { it.copy(showInlineQuickAddExpense = visible) }
+    }
+
+    fun quickAddExpense(amount: Double, category: String, description: String = "Quick Entry") {
+        val profile = currentProfile ?: return
+        viewModelScope.launch {
+            val expense = Expense(
+                id = "",
+                amount = amount,
+                categoryId = category.lowercase().replace(" ", "_"),
+                categoryName = category,
+                description = description,
+                timestamp = System.currentTimeMillis()
+            )
+            addExpenseUseCase(profile.uid, expense)
+            setInlineQuickAddExpenseVisible(false) // Hide it after adding
+        }
+    }
 
     /**
      * Loads the dashboard for the given [uid].
@@ -121,13 +143,33 @@ class HomeViewModel(
         expenses: List<Expense>
     ): List<DashboardWidget> {
         val widgets = mutableListOf<DashboardWidget>()
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
         val preferredWidgetKeys = profile.dashboardWidgets
+
+        val isEndOfMonth = currentDay >= 25
+        val displayName = profile.nickname?.takeIf { it.isNotBlank() } ?: profile.name
+        
+        val greeting = when (currentHour) {
+            in 5..11 -> "Rise and shine, $displayName! Ready to tackle your day?"
+            in 12..17 -> "Good afternoon, $displayName! Here's your mid-day snapshot."
+            else -> "Settling in, $displayName? Here's your daily summary."
+        }
+        
+        val actionableSummary = if (isEndOfMonth) {
+            "End of month approaching. Keep an eye on your utility usage and expenses."
+        } else {
+            "Everything is balanced and under control."
+        }
 
         // 1. Welcome Widget
         if (preferredWidgetKeys.contains("welcome")) {
-            widgets.add(DashboardWidget.WelcomeWidget(nickname = profile.nickname, name = profile.name))
+            widgets.add(DashboardWidget.WelcomeWidget(nickname = profile.nickname, name = profile.name, greeting = greeting, actionableSummary = actionableSummary))
         }
+
+        val widgetMap = mutableMapOf<String, DashboardWidget>()
 
         // 2. Electricity Graph
         if (preferredWidgetKeys.contains("electricity")) {
@@ -140,7 +182,7 @@ class HomeViewModel(
                     cost = monthBills.sumOf { it.totalCost }
                 )
             }
-            widgets.add(DashboardWidget.ElectricityGraphWidget(dataPoints = electricityDataPoints))
+            widgetMap["electricity"] = DashboardWidget.ElectricityGraphWidget(dataPoints = electricityDataPoints)
         }
 
         // 3. Water Usage Graph
@@ -154,7 +196,7 @@ class HomeViewModel(
                     cost = monthBills.sumOf { it.totalCost }
                 )
             }
-            widgets.add(DashboardWidget.WaterUsageWidget(dataPoints = waterDataPoints))
+            widgetMap["water"] = DashboardWidget.WaterUsageWidget(dataPoints = waterDataPoints)
         }
 
         // 4. Expense Summary
@@ -162,7 +204,7 @@ class HomeViewModel(
             val totalExpense = expenses.sumOf { it.amount }
             val breakdown = expenses.groupBy { it.categoryName }
                 .mapValues { it.value.sumOf { e -> e.amount } }
-            widgets.add(DashboardWidget.ExpenseSummaryWidget(ExpenseSummary(totalExpense, breakdown, profile.currencySymbol)))
+            widgetMap["expenses"] = DashboardWidget.ExpenseSummaryWidget(ExpenseSummary(totalExpense, breakdown, profile.currencySymbol))
         }
 
         // 5. Recent Activity Feed
@@ -183,20 +225,30 @@ class HomeViewModel(
             expenses.take(2).forEach {
                 activities.add(RecentActivity(it.description, it.categoryName, it.timestamp, "%.2f".format(it.amount), "expense", profile.currencySymbol))
             }
-            widgets.add(DashboardWidget.RecentActivityFeedWidget(activities.sortedByDescending { it.date }.take(5)))
+            widgetMap["activity"] = DashboardWidget.RecentActivityFeedWidget(activities.sortedByDescending { it.date }.take(5))
         }
 
         // 6. Quick Actions
         if (preferredWidgetKeys.contains("actions")) {
-            widgets.add(
-                DashboardWidget.QuickActionsWidget(
-                    actions = listOf(
-                        ActionItem("Utilities", "Calculators & tools", "🛠️", "utilities"),
-                        ActionItem("Expenses", "Track expenses", "💰", "expenses"),
-                        ActionItem("Profile", "View and edit", "👤", "profile")
-                    )
+            widgetMap["actions"] = DashboardWidget.QuickActionsWidget(
+                actions = listOf(
+                    ActionItem("Utilities", "Calculators & tools", "🛠️", "utilities"),
+                    ActionItem("Expenses", "Track expenses", "💰", "expenses"),
+                    ActionItem("Profile", "View and edit", "👤", "profile")
                 )
             )
+        }
+
+        // Contextual Ordering
+        if (isEndOfMonth) {
+            listOf("expenses", "electricity", "water", "actions", "activity").forEach { key ->
+                widgetMap[key]?.let { widgets.add(it) }
+            }
+        } else {
+            // Default ordering based on preferredWidgetKeys
+            preferredWidgetKeys.forEach { key ->
+                widgetMap[key]?.let { widgets.add(it) }
+            }
         }
 
         return widgets

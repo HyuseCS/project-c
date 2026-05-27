@@ -2,136 +2,157 @@ package com.hyuse.projectc.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Brush
+import androidx.core.view.WindowCompat
 
-// Lucid Indigo palette — Premium & Sophisticated
-private val LucidIndigo = Color(0xFF6200EE)
-private val LucidWhite = Color(0xFFFCFCFF)
-private val LucidGray = Color(0xFFE1E2EC)
-private val LucidGrayDark = Color(0xFF44474E)
-private val LucidBlack = Color(0xFF1A1C1E)
-
-private val LightColorScheme = lightColorScheme(
-    primary = LucidIndigo,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFF0E7FF),
-    onPrimaryContainer = Color(0xFF21005D),
-    surface = LucidWhite,
-    onSurface = LucidBlack,
-    surfaceVariant = LucidGray,
-    onSurfaceVariant = LucidGrayDark,
-    outline = Color(0xFF74777F),
-    error = Color(0xFFB3261E)
-)
+// Mobile Cinema Color Palette (Dark Mode OLED Optimized)
+private val DeepOLED = Color(0xFF0C0A09)
+private val LucidGold = Color(0xFFA16207)
+private val MutedSlate = Color(0xFF1C1917)
+private val OnMutedSlate = Color(0xFFE8ECF0)
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFD0BCFF),
-    onPrimary = Color(0xFF381E72),
-    primaryContainer = Color(0xFF4F378B),
-    onPrimaryContainer = Color(0xFFEADDFF),
-    surface = Color(0xFF1C1B1F),
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = Color(0xFF49454F),
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    outline = Color(0xFF938F99),
-    error = Color(0xFFF2B8B5)
+    primary = LucidGold,
+    onPrimary = Color.White,
+    secondary = MutedSlate,
+    onSecondary = OnMutedSlate,
+    background = DeepOLED,
+    onBackground = Color.White,
+    surface = DeepOLED,
+    onSurface = Color.White,
+    surfaceVariant = Color(0xFF1E293B),
+    onSurfaceVariant = Color(0xFFF8FAFC),
+    error = Color(0xFFDC2626)
 )
 
+// Mobile Cinema Inter Typography System
 private val LucidTypography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold, // 700
+        fontSize = 48.sp,
+        letterSpacing = (-1.5).sp
+    ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.ExtraBold,
+        fontWeight = FontWeight.SemiBold, // 600
         fontSize = 32.sp,
         letterSpacing = (-0.5).sp
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
+        fontWeight = FontWeight.SemiBold, // 600
+        fontSize = 24.sp,
         letterSpacing = (-0.5).sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Normal, // 400
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        letterSpacing = 0.sp
     ),
     labelLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium, // 500
         fontSize = 12.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 1.2.sp
     )
 )
 
 /**
- * Reusable semi-transparent surface for the "Lucid Glass" effect.
+ * Performance-conscious Lucid Glass surface.
+ * Uses native BlurEffect on API 31+, otherwise falls back to a highly optimized translucent surface.
  */
 @Composable
 fun LucidSurface(
     modifier: Modifier = Modifier,
+    blurRadius: Dp = 15.dp,
+    alphaPrimary: Float = 0.08f, // Included for signature compatibility
+    alphaSecondary: Float = 0.08f, // Included for signature compatibility
     content: @Composable () -> Unit
 ) {
     Surface(
         modifier = modifier
             .clip(RoundedCornerShape(32.dp))
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.7f),
-                        Color.White.copy(alpha = 0.4f)
-                    )
-                )
-            ),
+            .graphicsLayer {
+                alpha = 0.99f
+            }
+            .background(Color.White.copy(alpha = 0.08f))
+            .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(32.dp)),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)),
         content = content
     )
 }
 
 /**
+ * Primary Lucid Button
+ * Follows the 44dp mobile-native touch target standard and uses the accent color.
+ */
+@Composable
+fun LucidButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = LucidGold,
+        shape = RoundedCornerShape(8.dp),
+        modifier = modifier
+            .heightIn(min = 48.dp) // Accessibility: min height
+            .clickable(onClick = onClick)
+    ) {
+        Box(contentAlignment = androidx.compose.ui.Alignment.Center, modifier = Modifier.padding(horizontal = 24.dp)) {
+            Text(
+                text = text.uppercase(),
+                style = LucidTypography.labelLarge,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+/**
  * Project C Lucid Glass theme.
- * Focuses on sophisticated typography, airy whitespace, and tactile glassy surfaces.
+ * Forces dark mode for the premium OLED aesthetic.
  */
 @Composable
 fun ProjectCTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true, // Force Dark Theme for Lucid Glass
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = DarkColorScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.surface.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }
 

@@ -25,6 +25,7 @@ node_modules/
 /planning/*
 #/graphify-out/*
 .antigravitycli/*
+.gemini/
 # Memory
 memory.md
 completed_phases_plan.md
