@@ -39,17 +39,17 @@
     "mtime": 1779768178.8092299,
     "hash": "f2ee1576d34f6104489d0a93fad338e8"
   },
-  "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeScreen.kt": {
-    "mtime": 1779853493.05046,
-    "hash": "b691c1db11c2631a937d04d5ae6a8ab0"
-  },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeViewModel.kt": {
-    "mtime": 1779852687.904362,
-    "hash": "5e1e606c855fdebf5b15c0e45320871b"
+    "mtime": 1779859096.4326124,
+    "hash": "911c71e6884f200c5b70c887845fd7f5"
+  },
+  "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeScreen.kt": {
+    "mtime": 1779860630.7878144,
+    "hash": "63da6023b787233a1aed5ef56f1ea4ae"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/theme/Theme.kt": {
-    "mtime": 1779853011.0768905,
-    "hash": "b668899c3ab15f6706b8d07345a6e138"
+    "mtime": 1779860170.7834017,
+    "hash": "d3a8457ec2b5b94e5971b603eb05d4df"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/profile/ProfileViewModel.kt": {
     "mtime": 1776389896.065851,
@@ -362,6 +362,14 @@
   "/home/hyuse/Desktop/Project_C/planning/phase7_audit_fixes_plan.md": {
     "mtime": 1779852164.3969417,
     "hash": "7d1945287ee2a5ea4426f7d561955189"
+  },
+  "/home/hyuse/Desktop/Project_C/design-system/projectc/MASTER.md": {
+    "mtime": 1779858695.2300456,
+    "hash": "73e21ce104474c613992daf4b4ff2b2c"
+  },
+  "/home/hyuse/Desktop/Project_C/design-system/projectc/pages/dashboard.md": {
+    "mtime": 1779858695.2373538,
+    "hash": "afb30f74029088ab3be39f636d7a2a05"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/res/mipmap-hdpi/ic_launcher.png": {
     "mtime": 1775686312.0,
