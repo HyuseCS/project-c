@@ -35,6 +35,7 @@ fun HomeScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToUtilities: () -> Unit = {},
     onNavigateToExpenses: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
     onQuickAddExpense: (Double, String) -> Unit = { _, _ -> },
     onToggleInlineQuickAdd: (Boolean) -> Unit = {}
 ) {
@@ -397,6 +398,7 @@ fun QuickActionsLucid(
     onNavigateToUtilities: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToExpenses: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
     onToggleInlineQuickAdd: (Boolean) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -428,6 +430,7 @@ fun QuickActionsLucid(
                                         "utilities" -> onNavigateToUtilities()
                                         "profile" -> onNavigateToProfile()
                                         "expenses" -> onNavigateToExpenses()
+                                        "reminders" -> onNavigateToReminders()
                                     }
                                 },
                                 onLongClick = {

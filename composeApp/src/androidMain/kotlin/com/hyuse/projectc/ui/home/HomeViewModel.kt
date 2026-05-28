@@ -234,6 +234,7 @@ class HomeViewModel(
                 actions = listOf(
                     ActionItem("Utilities", "Calculators & tools", "🛠️", "utilities"),
                     ActionItem("Expenses", "Track expenses", "💰", "expenses"),
+                    ActionItem("Reminders", "Location-based", "📍", "reminders"),
                     ActionItem("Profile", "View and edit", "👤", "profile")
                 )
             )

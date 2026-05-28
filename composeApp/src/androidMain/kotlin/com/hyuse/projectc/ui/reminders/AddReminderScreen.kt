@@ -1,8 +1,6 @@
 package com.hyuse.projectc.ui.reminders
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -64,12 +62,11 @@ fun AddReminderScreen(
 
         // Fixed center pin (drawn over map to represent the exact target)
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Icon(
-                // In a real app, use a custom vector pin. Using standard icon here.
-                imageVector = Icons.Default.Add, 
-                contentDescription = "Map Center Pin",
-                tint = Color(0xFF6200EE),
-                modifier = Modifier.size(48.dp)
+            Text(
+                text = "+", 
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF6200EE)
             )
         }
 
@@ -82,7 +79,7 @@ fun AddReminderScreen(
         ) {
             LucidGlassSurface(cornerRadius = 24f) {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    Text("<", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 }
             }
             // A search pill would go here
@@ -121,7 +118,7 @@ fun AddReminderScreen(
                     ),
                     singleLine = true
                 )
-                Divider(color = Color.LightGray)
+                HorizontalDivider(color = Color.LightGray)
 
                 OutlinedTextField(
                     value = description,
@@ -135,7 +132,7 @@ fun AddReminderScreen(
                         unfocusedContainerColor = Color.Transparent
                     )
                 )
-                Divider(color = Color.LightGray)
+                HorizontalDivider(color = Color.LightGray)
 
                 Spacer(modifier = Modifier.height(16.dp))
                 

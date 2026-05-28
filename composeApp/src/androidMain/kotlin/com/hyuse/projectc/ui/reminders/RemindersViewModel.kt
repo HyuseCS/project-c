@@ -54,7 +54,7 @@ class RemindersViewModel(
                 val geofenceId = "geo_${latitude}_${longitude}"
 
                 val reminder = Reminder(
-                    id = UUID.randomSequence().toString(), // Simple UUID placeholder
+                    id = UUID.randomUUID().toString(), // Simple UUID placeholder
                     title = title,
                     description = description,
                     dateMillis = dateMillis,

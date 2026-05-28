@@ -30,6 +30,8 @@ import com.hyuse.projectc.ui.utilities.WaterBillScreen
 import com.hyuse.projectc.ui.utilities.WaterBillViewModel
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorScreen
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
+import com.hyuse.projectc.ui.reminders.AddReminderScreen
+import com.hyuse.projectc.ui.reminders.RemindersScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -49,6 +51,8 @@ object Routes {
     const val EXPENSES_DASHBOARD = "expenses_dashboard"
     const val ADD_EXPENSE = "add_expense"
     const val MANAGE_CATEGORIES = "manage_categories"
+    const val REMINDERS_DASHBOARD = "reminders_dashboard"
+    const val ADD_REMINDER = "add_reminder"
 }
 
 /**
@@ -142,6 +146,9 @@ fun NavGraph(navController: NavHostController) {
                     },
                     onNavigateToExpenses = {
                         navController.navigate(Routes.EXPENSES_DASHBOARD)
+                    },
+                    onNavigateToReminders = {
+                        navController.navigate(Routes.REMINDERS_DASHBOARD)
                     },
                     onQuickAddExpense = { amount, category ->
                         homeViewModel.quickAddExpense(amount, category)

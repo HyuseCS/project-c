@@ -4,14 +4,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
+    androidTarget()
     
     listOf(
         iosArm64(),
@@ -37,6 +34,15 @@ kotlin {
 
             // Serialization
             implementation(libs.kotlinx.serialization.json)
+
+            // SQLDelight
+            implementation(libs.sqldelight.coroutines.extensions)
+        }
+        androidMain.dependencies {
+            implementation(libs.sqldelight.android.driver)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.native.driver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -53,5 +59,13 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+sqldelight {
+    databases {
+        create("ProjectCDatabase") {
+            packageName.set("com.hyuse.projectc.shared.database")
+        }
     }
 }

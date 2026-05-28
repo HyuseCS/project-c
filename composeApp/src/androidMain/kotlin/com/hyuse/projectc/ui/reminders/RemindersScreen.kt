@@ -3,9 +3,7 @@ package com.hyuse.projectc.ui.reminders
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.unit.em
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,7 +40,7 @@ fun RemindersScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Text("<", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -57,7 +55,7 @@ fun RemindersScreen(
                 contentColor = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp, end = 16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Reminder")
+                Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
             }
         },
         containerColor = Color(0xFFFCFCFF) // Lucid White

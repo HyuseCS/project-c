@@ -9,18 +9,23 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
+    androidTarget()
     
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.kotlinx.coroutines.play.services)
             implementation(libs.koin.android)
+
+            // Maps & Location
+            implementation(libs.play.services.location)
+            implementation(libs.play.services.maps)
+            implementation(libs.maps.compose)
+
+            // WorkManager
+            implementation(libs.work.runtime.ktx)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

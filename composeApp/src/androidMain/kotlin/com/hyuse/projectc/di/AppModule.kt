@@ -7,6 +7,7 @@ import com.hyuse.projectc.ui.utilities.ElectricityBillViewModel
 import com.hyuse.projectc.ui.utilities.WaterBillViewModel
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
 import com.hyuse.projectc.ui.expenses.ExpensesViewModel
+import com.hyuse.projectc.ui.reminders.RemindersViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,6 +16,14 @@ import org.koin.dsl.module
  * Provides ViewModels and Android-specific services.
  */
 val appModule = module {
+    // Database Driver Factory
+    single { com.hyuse.projectc.data.database.DatabaseDriverFactory(get()) }
+    
+    // Geofencing
+    single<com.hyuse.projectc.domain.repository.GeofenceManager> { 
+        com.hyuse.projectc.platform.geofencing.GeofenceManagerImpl(get()) 
+    }
+
     viewModel { AuthViewModel(get(), get(), get(), get()) }
     viewModel { ProfileViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
@@ -22,5 +31,6 @@ val appModule = module {
     viewModel { WaterBillViewModel(get(), get(), get(), get(), get()) }
     viewModel { ElectricityPredictorViewModel(get(), get()) }
     viewModel { ExpensesViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { RemindersViewModel(get(), get()) }
 }
 

@@ -21,6 +21,16 @@ val sharedModule = module {
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single<CalculatorRepository> { CalculatorRepositoryImpl() }
     single<ExpenseRepository> { ExpenseRepositoryImpl() }
+    
+    // Database & Local Repositories
+    single { 
+        com.hyuse.projectc.shared.database.ProjectCDatabase(
+            driver = get<com.hyuse.projectc.data.database.DatabaseDriverFactory>().createDriver()
+        ) 
+    }
+    single<com.hyuse.projectc.domain.repository.ReminderRepository> { 
+        com.hyuse.projectc.data.repository.ReminderRepositoryImpl(get()) 
+    }
 
     // Auth use cases — factory
     factory { SignUpUseCase(get()) }
@@ -52,4 +62,7 @@ val sharedModule = module {
     factory { ObserveMonthlyExpensesUseCase(get()) }
     factory { GetMergedCategoriesUseCase(get()) }
     factory { SaveCustomCategoryUseCase(get()) }
+
+    // Reminder use cases — factory
+    factory { EvaluateTriggerUseCase() }
 }
