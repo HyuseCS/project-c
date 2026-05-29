@@ -1,5 +1,7 @@
 package com.hyuse.projectc.ui.reminders
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,21 +13,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.model.ReminderImportance
+import com.hyuse.projectc.navigation.Routes
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemindersScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToAddReminder: () -> Unit,
+    onNavigateToAddReminder: (String) -> Unit, // Changed to take a route string
     viewModel: RemindersViewModel = koinViewModel()
 ) {
     val reminders by viewModel.reminders.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -33,9 +39,8 @@ fun RemindersScreen(
                 title = { 
                     Text(
                         text = "Reminders",
-                        fontWeight = FontWeight.ExtraBold, // 800-weight
-                        fontSize = 32.sp,
-                        letterSpacing = (-0.02).em
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.headlineLarge
                     ) 
                 },
                 navigationIcon = {
@@ -50,15 +55,25 @@ fun RemindersScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToAddReminder,
-                containerColor = Color(0xFF6200EE), // Lucid Indigo
-                contentColor = Color.White,
+                onClick = {
+                    val hasFineLocation = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                    
+                    if (hasFineLocation) {
+                        onNavigateToAddReminder(Routes.ADD_REMINDER)
+                    } else {
+                        onNavigateToAddReminder(Routes.PERMISSION_SCREEN)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.primary, // Lucid Gold
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(bottom = 16.dp, end = 16.dp)
             ) {
                 Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
             }
-        },
-        containerColor = Color(0xFFFCFCFF) // Lucid White
+        }
     ) { paddingValues ->
         if (reminders.isEmpty()) {
             Box(
@@ -69,8 +84,8 @@ fun RemindersScreen(
             ) {
                 Text(
                     text = "No reminders yet.",
-                    color = Color.Gray,
-                    fontSize = 18.sp
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         } else {
@@ -92,10 +107,10 @@ fun RemindersScreen(
 @Composable
 fun ReminderItem(reminder: Reminder) {
     val indicatorColor = when (reminder.importance) {
-        ReminderImportance.LOW -> Color.LightGray
-        ReminderImportance.MEDIUM -> Color(0xFF4CAF50) // Green
-        ReminderImportance.HIGH -> Color(0xFFFF9800) // Orange
-        ReminderImportance.URGENT -> Color(0xFFE91E63) // Red/Orange
+        ReminderImportance.LOW -> Color.Gray
+        ReminderImportance.MEDIUM -> Color(0xFF4CAF50)
+        ReminderImportance.HIGH -> Color(0xFFFF9800)
+        ReminderImportance.URGENT -> Color(0xFFDC2626) // Use global error color logic
     }
 
     Row(
@@ -116,14 +131,14 @@ fun ReminderItem(reminder: Reminder) {
         Column {
             Text(
                 text = reminder.title,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = reminder.description,
-                fontSize = 14.sp,
-                color = Color.DarkGray
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

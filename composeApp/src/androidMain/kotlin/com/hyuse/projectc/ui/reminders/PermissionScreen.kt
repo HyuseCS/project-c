@@ -14,14 +14,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hyuse.projectc.ui.theme.LucidSurface
 
 @Composable
 fun PermissionScreen(
     onPermissionsGranted: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    var hasBackgroundLocation by remember { mutableStateOf(false) }
-
     val bgLocationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -44,69 +43,74 @@ fun PermissionScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        LucidSurface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
         ) {
-            Text(
-                text = "Never miss a beat.",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Project C needs background location access to trigger your reminders precisely when you arrive on campus or at the store—even if your phone is in your pocket.",
-                fontSize = 16.sp,
-                color = Color.DarkGray,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-            
-            Button(
-                onClick = {
-                    fgLocationLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6200EE) // Lucid Indigo
-                ),
-                shape = MaterialTheme.shapes.large
+            Column(
+                modifier = Modifier.padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Enable Location",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    text = "Location Access",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 32.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(
-                onClick = onNavigateBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Not Now",
-                    color = Color.Gray,
+                    text = "Project C needs background location access to trigger your reminders precisely when you arrive—even if your phone is in your pocket.",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp
                 )
+                Spacer(modifier = Modifier.height(48.dp))
+                
+                Button(
+                    onClick = {
+                        fgLocationLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary // Lucid Gold
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Text(
+                        text = "Enable Location",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Not Now",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }

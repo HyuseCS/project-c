@@ -53,6 +53,7 @@ object Routes {
     const val MANAGE_CATEGORIES = "manage_categories"
     const val REMINDERS_DASHBOARD = "reminders_dashboard"
     const val ADD_REMINDER = "add_reminder"
+    const val PERMISSION_SCREEN = "permission_screen"
 }
 
 /**
@@ -414,13 +415,26 @@ fun NavGraph(navController: NavHostController) {
         composable(Routes.REMINDERS_DASHBOARD) {
             RemindersScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToAddReminder = { navController.navigate(Routes.ADD_REMINDER) }
+                onNavigateToAddReminder = { route -> navController.navigate(route) }
             )
         }
 
         composable(Routes.ADD_REMINDER) {
             AddReminderScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.PERMISSION_SCREEN) {
+            com.hyuse.projectc.ui.reminders.PermissionScreen(
+                onPermissionsGranted = {
+                    navController.navigate(Routes.ADD_REMINDER) {
+                        popUpTo(Routes.PERMISSION_SCREEN) { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }
