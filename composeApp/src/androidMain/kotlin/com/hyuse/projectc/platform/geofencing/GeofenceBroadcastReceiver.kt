@@ -14,6 +14,7 @@ import com.hyuse.projectc.domain.repository.ReminderRepository
 import com.hyuse.projectc.domain.usecase.EvaluateTriggerUseCase
 import com.hyuse.projectc.domain.usecase.TriggerAction
 import com.hyuse.projectc.domain.usecase.TriggerEvent
+import com.hyuse.projectc.platform.notification.NotificationHelper
 import com.hyuse.projectc.platform.worker.ReminderTimeWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,11 +55,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent {
                         
                         when (action) {
                             TriggerAction.DISPATCH_AUDIBLE -> {
-                                dispatchNotification(context, reminder, isAudible = true)
+                                NotificationHelper.showNotification(context, reminder, isAudible = true)
                                 reminderRepository.updateLastTriggered(reminder.id, currentTime)
                             }
                             TriggerAction.DISPATCH_SILENT -> {
-                                dispatchNotification(context, reminder, isAudible = false)
+                                NotificationHelper.showNotification(context, reminder, isAudible = false)
                                 scheduleTimeWorker(context, reminder)
                                 reminderRepository.updateLastTriggered(reminder.id, currentTime)
                             }
@@ -70,11 +71,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(), KoinComponent {
                 }
             }
         }
-    }
-
-    private fun dispatchNotification(context: Context, reminder: com.hyuse.projectc.domain.model.Reminder, isAudible: Boolean) {
-        // TODO: Implement notification dispatch using NotificationManagerCompat
-        Log.d("GeofenceReceiver", "Dispatching notification for ${reminder.title}, audible=$isAudible")
     }
 
     private fun scheduleTimeWorker(context: Context, reminder: com.hyuse.projectc.domain.model.Reminder) {

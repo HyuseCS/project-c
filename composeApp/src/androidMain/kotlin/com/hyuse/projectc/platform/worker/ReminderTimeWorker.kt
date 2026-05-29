@@ -9,6 +9,7 @@ import com.hyuse.projectc.domain.repository.ReminderRepository
 import com.hyuse.projectc.domain.usecase.EvaluateTriggerUseCase
 import com.hyuse.projectc.domain.usecase.TriggerAction
 import com.hyuse.projectc.domain.usecase.TriggerEvent
+import com.hyuse.projectc.platform.notification.NotificationHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -33,16 +34,11 @@ class ReminderTimeWorker(
         val action = evaluateTrigger(reminder, currentTime, TriggerEvent.ALARM_FIRED)
         
         if (action == TriggerAction.DISPATCH_AUDIBLE) {
-            dispatchNotification(context, reminder)
+            NotificationHelper.showNotification(context, reminder, isAudible = true)
             reminderRepository.updateLastTriggered(reminder.id, currentTime)
             return Result.success()
         }
 
         return Result.success()
-    }
-
-    private fun dispatchNotification(context: Context, reminder: com.hyuse.projectc.domain.model.Reminder) {
-        // TODO: Implement NotificationManagerCompat audible dispatch
-        Log.d("ReminderTimeWorker", "Dispatching AUDIBLE notification for ${reminder.title}")
     }
 }

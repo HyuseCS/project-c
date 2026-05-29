@@ -180,6 +180,7 @@ fun HomeScreen(
                                         onNavigateToUtilities = onNavigateToUtilities,
                                         onNavigateToProfile = onNavigateToProfile,
                                         onNavigateToExpenses = onNavigateToExpenses,
+                                        onNavigateToReminders = onNavigateToReminders,
                                         onToggleInlineQuickAdd = onToggleInlineQuickAdd
                                     )
                                     

@@ -410,5 +410,18 @@ fun NavGraph(navController: NavHostController) {
                 )
             }
         }
+
+        composable(Routes.REMINDERS_DASHBOARD) {
+            RemindersScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddReminder = { navController.navigate(Routes.ADD_REMINDER) }
+            )
+        }
+
+        composable(Routes.ADD_REMINDER) {
+            AddReminderScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
     }
 }
