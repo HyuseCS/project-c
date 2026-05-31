@@ -7,17 +7,25 @@ import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.model.ReminderImportance
 import com.hyuse.projectc.domain.repository.GeofenceManager
 import com.hyuse.projectc.domain.repository.ReminderRepository
+import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
+import com.hyuse.projectc.domain.usecase.GetCurrentUserUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RemindersViewModel(
     private val reminderRepository: ReminderRepository,
-    private val geofenceManager: GeofenceManager
+    private val geofenceManager: GeofenceManager,
+    private val observeProfileUseCase: ObserveProfileUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     val reminders = reminderRepository.observeAllReminders()
@@ -25,6 +33,17 @@ class RemindersViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
+        )
+
+    val userProfile = getCurrentUserUseCase()
+        .flatMapLatest { user ->
+            val uid = user?.uid
+            if (uid != null) observeProfileUseCase(uid)
+            else flowOf(null)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
         )
 
     private val _uiState = MutableStateFlow<RemindersUiState>(RemindersUiState.Idle)

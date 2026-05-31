@@ -174,7 +174,7 @@ fun NavGraph(navController: NavHostController) {
                 ProfileScreen(
                     user = user,
                     profileState = profileState,
-                    onSave = { name, nickname, university, course, currencySymbol ->
+                    onSave = { name, nickname, university, course, currencySymbol, address, lat, lng ->
                         profileViewModel.saveProfile(
                             uid = user.uid,
                             name = name,
@@ -182,7 +182,10 @@ fun NavGraph(navController: NavHostController) {
                             email = user.email,
                             university = university,
                             course = course,
-                            currencySymbol = currencySymbol
+                            currencySymbol = currencySymbol,
+                            address = address,
+                            homeLatitude = lat,
+                            homeLongitude = lng
                         )
                     },
                     onBack = {

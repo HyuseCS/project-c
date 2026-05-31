@@ -14,5 +14,8 @@ data class UserProfile(
     val university: String,
     val course: String,
     val currencySymbol: String = "RM",
+    val address: String = "",
+    val homeLatitude: Double? = null,
+    val homeLongitude: Double? = null,
     val dashboardWidgets: List<String> = listOf("welcome", "electricity", "water", "expenses", "activity", "actions")
 )

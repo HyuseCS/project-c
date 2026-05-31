@@ -22,6 +22,7 @@ kotlin {
 
             // Maps & Location
             implementation(libs.play.services.location)
+            implementation(libs.play.services.places)
             implementation(libs.play.services.maps)
             implementation(libs.maps.compose)
 

@@ -2,23 +2,38 @@ package com.hyuse.projectc.ui.reminders
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 import com.hyuse.projectc.domain.model.ReminderImportance
 import com.hyuse.projectc.ui.theme.LucidSurface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,13 +43,14 @@ fun AddReminderScreen(
     viewModel: RemindersViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userProfile by viewModel.userProfile.collectAsState()
     val primaryColor = MaterialTheme.colorScheme.primary
     val context = LocalContext.current
     
-    // Initial map position
-    val initialPos = LatLng(37.7749, -122.4194)
+    // Default fallback position (e.g., SF)
+    val defaultPos = LatLng(37.7749, -122.4194)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(initialPos, 15f)
+        position = CameraPosition.fromLatLngZoom(defaultPos, 15f)
     }
 
     var title by remember { mutableStateOf("") }
@@ -50,6 +66,51 @@ fun AddReminderScreen(
             context,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // Logic to set initial location based on Profile coordinates, address, or GPS
+    LaunchedEffect(userProfile, hasLocationPermission) {
+        val profile = userProfile
+        var targetLatLng: LatLng? = null
+
+        // 1. Try explicit Home Lat/Lng first (Highest Precision)
+        if (profile?.homeLatitude != null && profile.homeLongitude != null) {
+            targetLatLng = LatLng(profile.homeLatitude!!, profile.homeLongitude!!)
+        } 
+        // 2. Fallback to Geocoding Profile Address string
+        else if (!profile?.address.isNullOrBlank()) {
+            targetLatLng = withContext(Dispatchers.IO) {
+                try {
+                    val geocoder = Geocoder(context)
+                    val addresses = geocoder.getFromLocationName(profile!!.address, 1)
+                    if (!addresses.isNullOrEmpty()) {
+                        LatLng(addresses[0].latitude, addresses[0].longitude)
+                    } else null
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        }
+
+        // 3. Fallback to GPS Last Location if profile data is unavailable
+        if (targetLatLng == null && hasLocationPermission) {
+            try {
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                val location = fusedLocationClient.lastLocation.await()
+                if (location != null) {
+                    targetLatLng = LatLng(location.latitude, location.longitude)
+                }
+            } catch (e: Exception) {
+                // Ignore
+            }
+        }
+
+        // 4. Animate Camera if a location was resolved
+        if (targetLatLng != null) {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(targetLatLng, 15f)
+            )
+        }
     }
 
     val mapProperties = remember {
@@ -85,90 +146,100 @@ fun AddReminderScreen(
             )
         }
 
-        // Fixed center pin
+        // Fixed center pin (Classic Location Pin)
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "+", 
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                color = primaryColor
+                text = "📍",
+                fontSize = 40.sp,
+                modifier = Modifier
+                    .offset(y = (-20).dp) // Offset to make the tip point at the center
+                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp), ambientColor = Color.Black)
             )
         }
 
-        // Top Floating Controls
-        Row(
+        // Top Floating Solid Bar (Solid Elevated Surfaces)
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp, start = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .statusBarsPadding()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.background,
+            shadowElevation = 8.dp
         ) {
-            LucidSurface {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 IconButton(onClick = onNavigateBack) {
-                    Text("<", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text("←", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
+                Text(
+                    text = "New Reminder",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
 
-        // Persistent Bottom Panel (Tactile Glass)
-        LucidSurface(
+        // Persistent Bottom Panel (Solid Elevated Surfaces)
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.background,
+            shadowElevation = 16.dp
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
             ) {
-                Text(
-                    text = "New Reminder",
-                    fontWeight = FontWeight.ExtraBold,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
+                // Title Field
+                SolidInputField(
                     value = title,
                     onValueChange = { title = it },
-                    placeholder = { Text("What to do?", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                    ),
+                    placeholder = "What to do?",
                     singleLine = true
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+                
+                Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedTextField(
+                // Description Field
+                SolidInputField(
                     value = description,
                     onValueChange = { description = it },
-                    placeholder = { Text("Details...", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                    )
+                    placeholder = "Details...",
+                    modifier = Modifier.heightIn(min = 60.dp)
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
-                Text(
-                    text = "Radius: ${radius.toInt()}m", 
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Radius", 
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = "${radius.toInt()}m", 
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = primaryColor
+                    )
+                }
                 Slider(
                     value = radius,
                     onValueChange = { radius = it },
@@ -181,14 +252,16 @@ fun AddReminderScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 if (uiState is RemindersUiState.Error) {
                     Text(
                         text = (uiState as RemindersUiState.Error).message,
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -213,18 +286,51 @@ fun AddReminderScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = primaryColor
                     ),
-                    shape = MaterialTheme.shapes.large,
+                    shape = RoundedCornerShape(16.dp),
                     enabled = uiState !is RemindersUiState.Saving
                 ) {
                     Text(
                         text = "Set Reminder", 
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold, 
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = Color.White
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SolidInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    singleLine: Boolean = false
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant) // Lighter contrast
+            .padding(16.dp)
+    ) {
+        if (value.isEmpty()) {
+            Text(
+                text = placeholder,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+            )
+        }
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            singleLine = singleLine
+        )
     }
 }
 

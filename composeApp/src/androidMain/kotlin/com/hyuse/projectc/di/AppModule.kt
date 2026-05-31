@@ -31,6 +31,6 @@ val appModule = module {
     viewModel { WaterBillViewModel(get(), get(), get(), get(), get()) }
     viewModel { ElectricityPredictorViewModel(get(), get()) }
     viewModel { ExpensesViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { RemindersViewModel(get(), get()) }
+    viewModel { RemindersViewModel(get(), get(), get(), get()) }
 }
 
