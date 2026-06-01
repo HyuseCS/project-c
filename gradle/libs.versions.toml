@@ -31,11 +31,11 @@ kotlinxSerialization = "1.10.0"
 # SQLDelight
 sqldelight = "2.0.2"
 
-# Maps & Location
-playServicesLocation = "21.3.0"
-playServicesPlaces = "3.5.0"
-mapsCompose = "6.1.1"
-playServicesMaps = "19.0.0"
+# Ktor
+ktor = "3.1.1"
+
+# Maps & Location (Open Source)
+maplibreCompose = "0.13.0"
 
 # WorkManager
 workManager = "2.10.0"
@@ -88,11 +88,14 @@ sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 
-# Maps & Location
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
-play-services-places = { module = "com.google.android.libraries.places:places", version.ref = "playServicesPlaces" }
-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+# Ktor
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+# Maps & Location (Open Source)
+maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "maplibreCompose" }
 
 # WorkManager
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManager" }

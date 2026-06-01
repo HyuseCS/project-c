@@ -1,8 +1,13 @@
 package com.hyuse.projectc.ui.reminders
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,111 +18,78 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.*
 import com.hyuse.projectc.domain.model.ReminderImportance
-import com.hyuse.projectc.ui.theme.LucidSurface
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
+import com.hyuse.projectc.ui.components.AddressSearchDialog
+import com.hyuse.projectc.ui.profile.ProfileViewModel
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.maplibre.compose.camera.*
+import org.maplibre.compose.map.MaplibreMap
+import org.maplibre.compose.style.BaseStyle
+import org.maplibre.spatialk.geojson.Position
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddReminderScreen(
     onNavigateBack: () -> Unit,
-    viewModel: RemindersViewModel = koinViewModel()
+    viewModel: RemindersViewModel = koinViewModel(),
+    profileViewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val userProfile by viewModel.userProfile.collectAsState()
     val primaryColor = MaterialTheme.colorScheme.primary
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     
-    // Default fallback position (e.g., SF)
-    val defaultPos = LatLng(37.7749, -122.4194)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(defaultPos, 15f)
-    }
+    // Default fallback position (e.g., Kuala Lumpur)
+    val initialPos = Position(longitude = 101.6869, latitude = 3.1390)
+    val cameraState = rememberCameraState(
+        firstPosition = CameraPosition(target = initialPos, zoom = 14.0)
+    )
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var radius by remember { mutableStateOf(250f) }
     var importance by remember { mutableStateOf(ReminderImportance.MEDIUM) }
+    
+    var showAddressSearch by remember { mutableStateOf(false) }
+    var selectedAddress by remember { mutableStateOf("") }
 
     val hasLocationPermission = remember {
         ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Logic to set initial location based on Profile coordinates, address, or GPS
-    LaunchedEffect(userProfile, hasLocationPermission) {
-        val profile = userProfile
-        var targetLatLng: LatLng? = null
-
-        // 1. Try explicit Home Lat/Lng first (Highest Precision)
-        if (profile?.homeLatitude != null && profile.homeLongitude != null) {
-            targetLatLng = LatLng(profile.homeLatitude!!, profile.homeLongitude!!)
-        } 
-        // 2. Fallback to Geocoding Profile Address string
-        else if (!profile?.address.isNullOrBlank()) {
-            targetLatLng = withContext(Dispatchers.IO) {
-                try {
-                    val geocoder = Geocoder(context)
-                    val addresses = geocoder.getFromLocationName(profile!!.address, 1)
-                    if (!addresses.isNullOrEmpty()) {
-                        LatLng(addresses[0].latitude, addresses[0].longitude)
-                    } else null
-                } catch (e: Exception) {
-                    null
-                }
-            }
-        }
-
-        // 3. Fallback to GPS Last Location if profile data is unavailable
-        if (targetLatLng == null && hasLocationPermission) {
+    // Logic to set initial location based on GPS
+    LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission) {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             try {
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                val location = fusedLocationClient.lastLocation.await()
-                if (location != null) {
-                    targetLatLng = LatLng(location.latitude, location.longitude)
+                @SuppressLint("MissingPermission")
+                val lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) 
+                    ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                
+                lastLocation?.let {
+                    cameraState.animateTo(
+                        CameraPosition(
+                            target = Position(longitude = it.longitude, latitude = it.latitude),
+                            zoom = 15.0
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 // Ignore
             }
         }
-
-        // 4. Animate Camera if a location was resolved
-        if (targetLatLng != null) {
-            cameraPositionState.animate(
-                CameraUpdateFactory.newLatLngZoom(targetLatLng, 15f)
-            )
-        }
-    }
-
-    val mapProperties = remember {
-        MapProperties(
-            mapStyleOptions = MapStyleOptions(DARK_MAP_STYLE_JSON),
-            isMyLocationEnabled = hasLocationPermission
-        )
     }
 
     LaunchedEffect(uiState) {
@@ -128,36 +100,23 @@ fun AddReminderScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Z=0 Base Layer: Map (OLED Dark Mode)
-        GoogleMap(
+        // Z=0 Base Layer: MapLibre (OLED Look via OpenFreeMap)
+        MaplibreMap(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true)
-        ) {
-            // Draw a circle to represent the geofence radius
-            val currentTarget = cameraPositionState.position.target
-            Circle(
-                center = currentTarget,
-                radius = radius.toDouble(),
-                fillColor = primaryColor.copy(alpha = 0.2f),
-                strokeColor = primaryColor,
-                strokeWidth = 2f
-            )
-        }
+            cameraState = cameraState,
+            baseStyle = BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
+        )
 
         // Fixed center pin (Classic Location Pin)
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 text = "📍",
                 fontSize = 40.sp,
-                modifier = Modifier
-                    .offset(y = (-20).dp) // Offset to make the tip point at the center
-                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp), ambientColor = Color.Black)
+                modifier = Modifier.offset(y = (-20).dp)
             )
         }
 
-        // Top Floating Solid Bar (Solid Elevated Surfaces)
+        // Top Floating Solid Bar
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -176,17 +135,32 @@ fun AddReminderScreen(
                 IconButton(onClick = onNavigateBack) {
                     Text("←", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
-                Text(
-                    text = "New Reminder",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+                
+                // Search Trigger Bar
+                Surface(
+                    onClick = { showAddressSearch = true },
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("🔍", fontSize = 16.sp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = if (selectedAddress.isEmpty()) "Search location..." else selectedAddress,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedAddress.isEmpty()) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1
+                        )
+                    }
+                }
             }
         }
 
-        // Persistent Bottom Panel (Solid Elevated Surfaces)
+        // Persistent Bottom Panel
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -268,7 +242,7 @@ fun AddReminderScreen(
 
                 Button(
                     onClick = {
-                        val currentTarget = cameraPositionState.position.target
+                        val currentTarget = cameraState.position.target
                         viewModel.saveReminder(
                             title = title.ifBlank { "Untitled Reminder" },
                             description = description,
@@ -299,6 +273,25 @@ fun AddReminderScreen(
             }
         }
     }
+
+    if (showAddressSearch) {
+        AddressSearchDialog(
+            viewModel = profileViewModel,
+            onAddressSelected = { feature ->
+                selectedAddress = feature.properties.getFormattedAddress()
+                coroutineScope.launch {
+                    cameraState.animateTo(
+                        CameraPosition(
+                            target = Position(longitude = feature.geometry.longitude, latitude = feature.geometry.latitude),
+                            zoom = 16.0
+                        )
+                    )
+                }
+                showAddressSearch = false
+            },
+            onDismiss = { showAddressSearch = false }
+        )
+    }
 }
 
 @Composable
@@ -313,7 +306,7 @@ fun SolidInputField(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant) // Lighter contrast
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(16.dp)
     ) {
         if (value.isEmpty()) {
@@ -333,170 +326,3 @@ fun SolidInputField(
         )
     }
 }
-
-/**
- * Custom OLED Dark Map Style for Google Maps
- */
-private const val DARK_MAP_STYLE_JSON = """
-[
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#0C0A09"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#1C1917"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#6b9a76"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#1C1917"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#1E293B"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9ca5b3"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#312E81"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#1f2835"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#f3d19c"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#2f3948"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#0C0A09"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#515c6d"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  }
-]
-"""

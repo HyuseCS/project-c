@@ -1,15 +1,17 @@
 package com.hyuse.projectc.ui.profile
 
-import android.app.Activity
-import android.content.pm.PackageManager
+import android.annotation.SuppressLint
 import android.location.Geocoder
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.location.Location
+import android.location.LocationManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,19 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
-import com.google.maps.android.compose.*
 import com.hyuse.projectc.domain.model.AppConstants
 import com.hyuse.projectc.domain.model.User
-import com.hyuse.projectc.ui.theme.LucidSurface
+import com.hyuse.projectc.ui.components.AddressSearchDialog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.withContext
+import org.koin.compose.viewmodel.koinViewModel
+import org.maplibre.compose.camera.*
+import org.maplibre.compose.map.MaplibreMap
+import org.maplibre.compose.style.BaseStyle
+import org.maplibre.spatialk.geojson.Position
 
 /**
  * Screen for creating or editing a user profile.
@@ -49,7 +51,8 @@ fun ProfileScreen(
     onSave: (name: String, nickname: String, university: String, course: String, currencySymbol: String, address: String, lat: Double?, lng: Double?) -> Unit,
     onBack: () -> Unit,
     onClearError: () -> Unit,
-    onSaveSuccess: () -> Unit
+    onSaveSuccess: () -> Unit,
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     var name by rememberStringState("")
     var nickname by rememberStringState("")
@@ -64,33 +67,8 @@ fun ProfileScreen(
     var currencyExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    var showAddressSearch by remember { mutableStateOf(false) }
     var showMapPinning by remember { mutableStateOf(false) }
-
-    // Initialize Places SDK
-    LaunchedEffect(Unit) {
-        try {
-            val applicationInfo = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            val apiKey = applicationInfo.metaData.getString("com.google.android.geo.API_KEY")
-            if (apiKey != null && !Places.isInitialized()) {
-                Places.initialize(context, apiKey)
-            }
-        } catch (e: Exception) {
-            // Ignore initialization errors
-        }
-    }
-
-    // Autocomplete Launcher
-    val autocompleteLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val place = Autocomplete.getPlaceFromIntent(result.data!!)
-            address = place.address ?: ""
-            homeLat = place.latLng?.latitude
-            homeLng = place.latLng?.longitude
-        }
-    }
 
     // Update fields when profile is loaded
     LaunchedEffect(profileState) {
@@ -193,7 +171,7 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Surface(
-                        onClick = { /* Could open a choice dialog but we have buttons below */ },
+                        onClick = { showAddressSearch = true },
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
@@ -203,7 +181,7 @@ fun ProfileScreen(
                             Text(
                                 text = if (address.isEmpty()) "No address selected" else address,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = if (address.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
+                                color = if (address.isEmpty()) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
                             )
                             if (homeLat != null && homeLng != null) {
                                 Text(
@@ -221,13 +199,7 @@ fun ProfileScreen(
                     ) {
                         // Search Button
                         Button(
-                            onClick = {
-                                val intent = Autocomplete.IntentBuilder(
-                                    AutocompleteActivityMode.OVERLAY,
-                                    listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-                                ).build(context)
-                                autocompleteLauncher.launch(intent)
-                            },
+                            onClick = { showAddressSearch = true },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer),
                             shape = RoundedCornerShape(8.dp),
@@ -266,7 +238,7 @@ fun ProfileScreen(
                         readOnly = true,
                         label = { Text("Preferred Currency") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
 
                     ExposedDropdownMenu(
@@ -320,13 +292,27 @@ fun ProfileScreen(
         }
     }
 
-    // Map Pinning Modal
+    // Address Search Dialog (Photon API)
+    if (showAddressSearch) {
+        AddressSearchDialog(
+            viewModel = viewModel,
+            onAddressSelected = { feature ->
+                address = feature.properties.getFormattedAddress()
+                homeLat = feature.geometry.latitude
+                homeLng = feature.geometry.longitude
+                showAddressSearch = false
+            },
+            onDismiss = { showAddressSearch = false }
+        )
+    }
+
+    // Map Pinning Modal (MapLibre)
     if (showMapPinning) {
         MapPinningDialog(
-            initialLocation = if (homeLat != null && homeLng != null) LatLng(homeLat!!, homeLng!!) else LatLng(3.1390, 101.6869), // Defaults to KL
-            onConfirm = { selectedLatLng, resolvedAddress ->
-                homeLat = selectedLatLng.latitude
-                homeLng = selectedLatLng.longitude
+            initialLocation = if (homeLat != null && homeLng != null) Position(longitude = homeLng!!, latitude = homeLat!!) else Position(longitude = 101.6869, latitude = 3.1390),
+            onConfirm = { selectedPos, resolvedAddress ->
+                homeLat = selectedPos.latitude
+                homeLng = selectedPos.longitude
                 address = resolvedAddress
                 showMapPinning = false
             },
@@ -335,35 +321,36 @@ fun ProfileScreen(
     }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 fun MapPinningDialog(
-    initialLocation: LatLng,
-    onConfirm: (LatLng, String) -> Unit,
+    initialLocation: Position,
+    onConfirm: (Position, String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(initialLocation, 15f)
-    }
+    val cameraState = rememberCameraState(
+        firstPosition = CameraPosition(target = initialLocation, zoom = 15.0)
+    )
     val context = LocalContext.current
     var resolvedAddress by remember { mutableStateOf("Resolving...") }
-    val coroutineScope = rememberCoroutineScope()
 
-    // Reverse geocode whenever the camera stops moving
-    LaunchedEffect(cameraPositionState.isMoving) {
-        if (!cameraPositionState.isMoving) {
-            val target = cameraPositionState.position.target
-            resolvedAddress = withContext(Dispatchers.IO) {
-                try {
-                    val geocoder = Geocoder(context)
-                    val addresses = geocoder.getFromLocation(target.latitude, target.longitude, 1)
-                    if (!addresses.isNullOrEmpty()) {
-                        addresses[0].getAddressLine(0) ?: "Unknown Address"
-                    } else "Coordinates: ${target.latitude}, ${target.longitude}"
-                } catch (e: Exception) {
-                    "Coordinates: ${target.latitude}, ${target.longitude}"
+    // Reverse geocode whenever the camera stops moving (debounced snapshotFlow)
+    LaunchedEffect(cameraState) {
+        snapshotFlow { cameraState.position.target }
+            .debounce(500)
+            .collect { target ->
+                resolvedAddress = withContext(Dispatchers.IO) {
+                    try {
+                        val geocoder = Geocoder(context)
+                        val addresses = geocoder.getFromLocation(target.latitude, target.longitude, 1)
+                        if (!addresses.isNullOrEmpty()) {
+                            addresses[0].getAddressLine(0) ?: "Unknown Address"
+                        } else "Coordinates: ${target.latitude}, ${target.longitude}"
+                    } catch (e: Exception) {
+                        "Coordinates: ${target.latitude}, ${target.longitude}"
+                    }
                 }
             }
-        }
     }
 
     Dialog(
@@ -375,10 +362,10 @@ fun MapPinningDialog(
             color = MaterialTheme.colorScheme.background
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                GoogleMap(
+                MaplibreMap(
                     modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true)
+                    cameraState = cameraState,
+                    baseStyle = BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
                 )
 
                 // Center Pin
@@ -405,10 +392,11 @@ fun MapPinningDialog(
                             text = "Pin Your Location",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = onDismiss) {
-                            Text("✕", fontWeight = FontWeight.Bold)
+                            Text("✕", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
@@ -431,11 +419,12 @@ fun MapPinningDialog(
                         Text(
                             text = resolvedAddress,
                             style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 2
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
-                            onClick = { onConfirm(cameraPositionState.position.target, resolvedAddress) },
+                            onClick = { onConfirm(cameraState.position.target, resolvedAddress) },
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(16.dp)
                         ) {

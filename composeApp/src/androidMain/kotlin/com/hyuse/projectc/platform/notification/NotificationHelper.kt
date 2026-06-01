@@ -13,6 +13,10 @@ object NotificationHelper {
     private const val CHANNEL_NAME = "Location Reminders"
     private const val CHANNEL_DESCRIPTION = "Notifications for location-based tasks"
 
+    private const val SERVICE_CHANNEL_ID = "location_service_channel"
+    private const val SERVICE_CHANNEL_NAME = "Location Tracking Service"
+    const val SERVICE_NOTIFICATION_ID = 1001
+
     fun showNotification(context: Context, reminder: Reminder, isAudible: Boolean) {
         createNotificationChannel(context)
 
@@ -31,6 +35,29 @@ object NotificationHelper {
             NotificationManagerCompat.from(context).notify(reminder.id.hashCode(), builder.build())
         } catch (e: SecurityException) {
             // Permission not granted for POST_NOTIFICATIONS on Android 13+
+        }
+    }
+
+    fun createServiceNotification(context: Context): android.app.Notification {
+        createServiceChannel(context)
+        return NotificationCompat.Builder(context, SERVICE_CHANNEL_ID)
+            .setContentTitle("ProjectC Location Service")
+            .setContentText("Monitoring your active reminders...")
+            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
+    }
+
+    private fun createServiceChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                SERVICE_CHANNEL_ID,
+                SERVICE_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            )
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

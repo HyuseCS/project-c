@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
-    alias(libs.plugins.secrets)
 }
 
 kotlin {
@@ -17,14 +16,10 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.kotlinx.coroutines.play.services)
             implementation(libs.koin.android)
 
-            // Maps & Location
-            implementation(libs.play.services.location)
-            implementation(libs.play.services.places)
-            implementation(libs.play.services.maps)
-            implementation(libs.maps.compose)
+            // Maps & Location (Open Source)
+            implementation(libs.maplibre.compose)
 
             // WorkManager
             implementation(libs.work.runtime.ktx)
