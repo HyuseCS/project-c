@@ -19,7 +19,7 @@ data class ExpenseSummary(val total: Double, val categoryBreakdown: Map<String, 
 
 data class RecentActivity(val title: String, val subtitle: String, val date: Long, val amount: String, val type: String, val currencySymbol: String)
 
-data class ActionItem(val title: String, val subtitle: String, val emoji: String, val route: String)
+data class ActionItem(val title: String, val subtitle: String, val iconKey: String, val route: String)
 
 sealed class DashboardWidget {
     data class WelcomeWidget(val nickname: String?, val name: String, val greeting: String = "HELLO,", val actionableSummary: String? = null) : DashboardWidget()
@@ -232,10 +232,10 @@ class HomeViewModel(
         if (preferredWidgetKeys.contains("actions")) {
             widgetMap["actions"] = DashboardWidget.QuickActionsWidget(
                 actions = listOf(
-                    ActionItem("Utilities", "Calculators & tools", "🛠️", "utilities"),
-                    ActionItem("Expenses", "Track expenses", "💰", "expenses"),
-                    ActionItem("Reminders", "Location-based", "📍", "reminders"),
-                    ActionItem("Profile", "View and edit", "👤", "profile")
+                    ActionItem("Utilities", "Calculators & tools", "utilities", "utilities"),
+                    ActionItem("Expenses", "Track expenses", "expenses", "expenses"),
+                    ActionItem("Reminders", "Location-based", "reminders", "reminders"),
+                    ActionItem("Profile", "View and edit", "profile", "profile")
                 )
             )
         }

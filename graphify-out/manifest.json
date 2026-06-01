@@ -12,8 +12,8 @@
     "hash": "c1dbe2578a42f0e02716dfa56ff70f5a"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/build.gradle.kts": {
-    "mtime": 1780019805.4374602,
-    "hash": "e795c61c32fa5be7c38e98e375fbb326"
+    "mtime": 1780322319.3637507,
+    "hash": "715e490790b09a4a53729088d5e302e3"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/App.kt": {
     "mtime": 1775718799.532485,
@@ -32,116 +32,124 @@
     "hash": "d6f03ef70a97fe41b1b971dd50ff8eb5"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/auth/LoginScreen.kt": {
-    "mtime": 1779768163.1814373,
-    "hash": "c03c1114e43b77cc630092ed76352638"
+    "mtime": 1780326447.2770813,
+    "hash": "075960c02e0a131dd2fcc4241beeed9f"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/auth/SignUpScreen.kt": {
-    "mtime": 1779768178.8092299,
-    "hash": "f2ee1576d34f6104489d0a93fad338e8"
+    "mtime": 1780324538.960363,
+    "hash": "c57ab44e917d4b9f6a9103a5345164a6"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeViewModel.kt": {
-    "mtime": 1779982597.9803073,
-    "hash": "172ae6d1217597cfcb6349d219dacecd"
+    "mtime": 1780324499.0334191,
+    "hash": "b9392f9297ef5aec390758729d204a1d"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/home/HomeScreen.kt": {
-    "mtime": 1780012828.4942937,
-    "hash": "f5005e722e469002ece094d9a67e2ea4"
+    "mtime": 1780324524.0790174,
+    "hash": "e6d48f0ea50b3f035f7d8f000a0df670"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/theme/Theme.kt": {
     "mtime": 1779860170.7834017,
     "hash": "d3a8457ec2b5b94e5971b603eb05d4df"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/profile/ProfileViewModel.kt": {
-    "mtime": 1776389896.065851,
-    "hash": "0e7782189ece8d674b5330b32cc944ac"
+    "mtime": 1780239194.0530913,
+    "hash": "35a43331127975ad49655be26ed7638d"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/profile/ProfileScreen.kt": {
-    "mtime": 1776389907.5802538,
-    "hash": "27a9286164a27be1033e2289888c30fd"
+    "mtime": 1780325470.5725136,
+    "hash": "10a3591894c29006d250cb50590b89a6"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillViewModel.kt": {
     "mtime": 1779717270.604089,
     "hash": "931c7c7da7b20e8e28190f3c3cccad88"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/UtilitiesHubScreen.kt": {
-    "mtime": 1779768740.5042636,
-    "hash": "33d9f0b234b74deef2f3095c913d12b7"
+    "mtime": 1780324553.9837043,
+    "hash": "64c31ea79ecc8be38934c9bd836c2ddc"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillScreen.kt": {
-    "mtime": 1776390073.8796103,
-    "hash": "3793cce0fbbdd02428a900c53695a675"
+    "mtime": 1780325487.2096663,
+    "hash": "5e2def3acf4706a99be9215156643a94"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/ElectricityBillHistoryScreen.kt": {
-    "mtime": 1779721693.6015477,
-    "hash": "684bd9a980c9f26ec9fb4847bcd7eb39"
+    "mtime": 1780324592.9545581,
+    "hash": "92a8de0dfca3f922784fb884b311c3f4"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillViewModel.kt": {
     "mtime": 1779717292.135292,
     "hash": "4caf31436af5f41471ab511c0f334a86"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillScreen.kt": {
-    "mtime": 1776390098.523083,
-    "hash": "e43030d111c345c41e21faeb6a69c2a0"
+    "mtime": 1780324567.3270018,
+    "hash": "686ca16e69b9a450c19645fad7df2727"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/WaterBillHistoryScreen.kt": {
-    "mtime": 1779721704.185581,
-    "hash": "aa189d215052027be1a1050cddb9a7a3"
+    "mtime": 1780324583.1053467,
+    "hash": "bcab2b885973e88ed5312593680d7432"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/predictor/ElectricityPredictorViewModel.kt": {
     "mtime": 1776390043.2907104,
     "hash": "9002c81071854e9854e057439f8b84f3"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/utilities/predictor/ElectricityPredictorScreen.kt": {
-    "mtime": 1776390126.8857684,
-    "hash": "76787bd7d1eb90fe1794553ba5cd14c7"
+    "mtime": 1780324603.668785,
+    "hash": "a8f94d063fa332946a415b73d9fcfad6"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/ExpensesViewModel.kt": {
     "mtime": 1776389953.7500927,
     "hash": "6f55593225c64aa86525a5a4db120f5d"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/ExpensesDashboardScreen.kt": {
-    "mtime": 1779768727.9243383,
-    "hash": "b0f93164651902d1cb0e7f69917d59e6"
+    "mtime": 1780324630.887347,
+    "hash": "d4c3c9ac415f6931e4a3641b7732084e"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/AddExpenseScreen.kt": {
     "mtime": 1776358961.9871776,
     "hash": "3ac864f62d5caf078f476713df940150"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/expenses/CategoryManagerScreen.kt": {
-    "mtime": 1776357311.4648104,
-    "hash": "b926a4adbeff8b16840505ddc1796912"
+    "mtime": 1780324637.8974884,
+    "hash": "064a6aa55a3b7930c45ea4972a50b580"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/reminders/RemindersViewModel.kt": {
-    "mtime": 1779982980.7201889,
-    "hash": "b4383f232c60e4831397df15fdfd9bef"
+    "mtime": 1780234276.6201453,
+    "hash": "2f7e968026dcb20807acbc98dfcac8f1"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/reminders/RemindersScreen.kt": {
-    "mtime": 1780018377.9038146,
-    "hash": "846af8c14c007dc711d3b1dcab7af906"
+    "mtime": 1780327165.9709504,
+    "hash": "e86aa5b173e56fc1dca00befd3de9a32"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/reminders/PermissionScreen.kt": {
     "mtime": 1780018302.3731682,
     "hash": "ea976f550e1fc27a33e396370f73d387"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/reminders/AddReminderScreen.kt": {
-    "mtime": 1780018318.7383137,
-    "hash": "a9d7e60d0bd4633a2bc40237a517536d"
+    "mtime": 1780324668.5210915,
+    "hash": "04d8b6e999638a7bf61c0d6e54995997"
+  },
+  "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/ui/components/AddressSearchDialog.kt": {
+    "mtime": 1780324679.811308,
+    "hash": "304dec0897196b81146eb45815c102f6"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/navigation/NavGraph.kt": {
-    "mtime": 1780018384.5488684,
-    "hash": "5be86eb98f4697eb08767736e4815caf"
+    "mtime": 1780234903.3573246,
+    "hash": "8fa9ea31d8c778aa75716bc2e05f282e"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/di/AppModule.kt": {
-    "mtime": 1779981147.5301192,
-    "hash": "9f5de2f063b40113c58cda72e2b26e76"
+    "mtime": 1780239200.6694922,
+    "hash": "7cc221f0381d40e1e5f96fcf9a5f8174"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/platform/geofencing/GeofenceManagerImpl.kt": {
-    "mtime": 1780018493.1526902,
-    "hash": "051ce36311a785d91fcc9ce73adb99ff"
+    "mtime": 1780298326.8603356,
+    "hash": "9e6aa993cf0521b7d623df2df66e8743"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/platform/geofencing/GeofenceBroadcastReceiver.kt": {
-    "mtime": 1780013086.8861735,
-    "hash": "a4aceb5854015d0746c32b9f9a7bb36a"
+    "mtime": 1780298237.168128,
+    "hash": "af1793e769abf598a5e983fdd6c362a2"
+  },
+  "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/platform/geofencing/CustomLocationService.kt": {
+    "mtime": 1780298544.7428422,
+    "hash": "e031f90b451dcd17d5e3d279f3894358"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/platform/worker/ReminderTimeWorker.kt": {
     "mtime": 1780013149.9470387,
@@ -152,8 +160,8 @@
     "hash": "1d66eb5b3676f16461a9c36a7078cb65"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidMain/kotlin/com/hyuse/projectc/platform/notification/NotificationHelper.kt": {
-    "mtime": 1780013252.0280998,
-    "hash": "b516be9d1e54939ebbd17b659fbe23bc"
+    "mtime": 1780298294.0052595,
+    "hash": "6c863f2c82813e86df7616a2752f8e7c"
   },
   "/home/hyuse/Desktop/Project_C/composeApp/src/androidUnitTest/kotlin/com/hyuse/projectc/ComposeAppAndroidUnitTest.kt": {
     "mtime": 1775686312.0,
@@ -168,8 +176,8 @@
     "hash": "f6a01e7c9aa7a979c4ef926df57fe088"
   },
   "/home/hyuse/Desktop/Project_C/shared/build.gradle.kts": {
-    "mtime": 1779978817.919993,
-    "hash": "8715b929ff9fb1da6bcf7ec272abea8a"
+    "mtime": 1780239149.30942,
+    "hash": "03adf4f80c303192c7cc4fd378333a52"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/androidMain/kotlin/com/hyuse/projectc/Platform.android.kt": {
     "mtime": 1775686312.0,
@@ -216,8 +224,8 @@
     "hash": "5cae8ade12cf1b561d00af56a218c3b1"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/UserProfile.kt": {
-    "mtime": 1776696764.8581192,
-    "hash": "820558560793338d9280f6d29b261dc3"
+    "mtime": 1780234889.4599242,
+    "hash": "22ecbe4d78b36837a741fe915ca38eca"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/ReminderImportance.kt": {
     "mtime": 1779979092.3165798,
@@ -230,6 +238,10 @@
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/Reminder.kt": {
     "mtime": 1779979092.3165798,
     "hash": "bb4c981b0adfccbe7b0fc33c9c5f31b6"
+  },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/model/PhotonModels.kt": {
+    "mtime": 1780239157.1204305,
+    "hash": "d9c3d0bae59d9704a863c5157acf693e"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/repository/AuthRepository.kt": {
     "mtime": 1775718646.2569566,
@@ -254,6 +266,10 @@
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/repository/GeofenceManager.kt": {
     "mtime": 1779979124.411376,
     "hash": "9a7ba018c7c89d060b7942162be8ecd6"
+  },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/repository/GeocodingRepository.kt": {
+    "mtime": 1780239160.9944358,
+    "hash": "e5187f842325ae97e6500275d75a0911"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/usecase/SignUpUseCase.kt": {
     "mtime": 1775718648.4999645,
@@ -347,6 +363,10 @@
     "mtime": 1779979124.411376,
     "hash": "0d38e01355e1aa873d90132e7cec5bf6"
   },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/domain/usecase/SearchAddressUseCase.kt": {
+    "mtime": 1780239178.1404595,
+    "hash": "eb71a8784b1e0a9a64dce12712458e4e"
+  },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/data/repository/AuthRepositoryImpl.kt": {
     "mtime": 1775718667.4210303,
     "hash": "6fbdefd90746cfc68aeffaea36d6bd86"
@@ -367,13 +387,17 @@
     "mtime": 1779979189.2912095,
     "hash": "84243f48bed87f83159cc79311676160"
   },
+  "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/data/repository/GeocodingRepositoryImpl.kt": {
+    "mtime": 1780239165.593442,
+    "hash": "e6d971eb0c74fbf845f2bbcdd4181699"
+  },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/data/database/DatabaseDriverFactory.kt": {
     "mtime": 1779979148.7805219,
     "hash": "92b3a1b56b7891d6dfe5951cf403b820"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonMain/kotlin/com/hyuse/projectc/di/SharedModule.kt": {
-    "mtime": 1779979984.5589838,
-    "hash": "745cb2d6969a253b571f4b4104844a08"
+    "mtime": 1780239181.6504645,
+    "hash": "bb0a81aead9cf2c34e588d1209e47465"
   },
   "/home/hyuse/Desktop/Project_C/shared/src/commonTest/kotlin/com/hyuse/projectc/SharedCommonTest.kt": {
     "mtime": 1775686312.0,

@@ -12,7 +12,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.background
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Utilities Hub screen — lists available utility tools.
@@ -62,7 +66,7 @@ fun UtilitiesHubScreen(
 
             // Electricity Bill Calculator
             UtilityLucidItem(
-                emoji = "⚡",
+                icon = Icons.Default.Bolt,
                 title = "Electricity",
                 description = "ANALYZE METER READINGS",
                 onClick = onNavigateToElectricityCalculator
@@ -70,7 +74,7 @@ fun UtilitiesHubScreen(
 
             // Electricity Usage Predictor
             UtilityLucidItem(
-                emoji = "🔮",
+                icon = Icons.Default.AutoAwesome,
                 title = "Predictor",
                 description = "ESTIMATE APPLIANCE LOAD",
                 onClick = onNavigateToElectricityPredictor
@@ -78,7 +82,7 @@ fun UtilitiesHubScreen(
 
             // Water Bill Calculator
             UtilityLucidItem(
-                emoji = "💧",
+                icon = Icons.Default.WaterDrop,
                 title = "Water",
                 description = "TRACK CONSUMPTION TRENDS",
                 onClick = onNavigateToWaterCalculator
@@ -89,7 +93,7 @@ fun UtilitiesHubScreen(
 
 @Composable
 private fun UtilityLucidItem(
-    emoji: String,
+    icon: ImageVector,
     title: String,
     description: String,
     onClick: () -> Unit
@@ -109,7 +113,12 @@ private fun UtilityLucidItem(
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = emoji, fontSize = 32.sp)
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
         Column {
             Text(

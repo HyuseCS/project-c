@@ -21,6 +21,12 @@ import java.util.Locale
 
 import com.hyuse.projectc.ui.theme.LucidSurface
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExpensesDashboardScreen(
@@ -58,7 +64,7 @@ fun ExpensesDashboardScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(20.dp)
             ) {
-                Text("＋", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Icon(Icons.Default.Add, contentDescription = "Add Expense")
             }
         }
     ) { paddingValues ->
@@ -148,7 +154,7 @@ fun MonthSelectorLucid(month: Int, year: Int, onPrevious: () -> Unit, onNext: ()
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onPrevious) { 
-            Text("←", fontWeight = FontWeight.Bold, fontSize = 20.sp) 
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Month") 
         }
         Text(
             text = monthName, 
@@ -157,7 +163,7 @@ fun MonthSelectorLucid(month: Int, year: Int, onPrevious: () -> Unit, onNext: ()
             letterSpacing = 1.sp
         )
         IconButton(onClick = onNext) { 
-            Text("→", fontWeight = FontWeight.Bold, fontSize = 20.sp) 
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Month") 
         }
     }
 }
@@ -245,7 +251,11 @@ fun LucidExpenseItem(expense: Expense, currencySymbol: String, onDelete: () -> U
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onDelete) {
-                    Text("×", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = MaterialTheme.colorScheme.error)
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         },

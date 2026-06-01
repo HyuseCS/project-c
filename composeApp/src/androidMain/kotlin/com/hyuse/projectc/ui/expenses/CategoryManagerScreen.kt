@@ -8,6 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +40,7 @@ fun CategoryManagerScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
-                Text("➕")
+                Icon(Icons.Default.Add, contentDescription = "Add Category")
             }
         }
     ) { paddingValues ->

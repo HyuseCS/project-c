@@ -5,6 +5,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,7 +17,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.hyuse.projectc.domain.model.PhotonFeature
@@ -51,7 +53,7 @@ fun AddressSearchDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onDismiss) {
-                            Text("←", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                         }
                         
                         Box(modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
@@ -80,7 +82,7 @@ fun AddressSearchDialog(
                                 query = ""
                                 viewModel.searchAddress("")
                             }) {
-                                Text("✕", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                Icon(Icons.Default.Close, contentDescription = "Clear", tint = MaterialTheme.colorScheme.onSurface)
                             }
                         }
                     }

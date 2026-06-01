@@ -1,28 +1,20 @@
 package com.hyuse.projectc.ui.profile
 
-import android.annotation.SuppressLint
 import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -205,7 +197,7 @@ fun ProfileScreen(
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
-                            Text("🔍", fontSize = 18.sp)
+                            Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("SEARCH", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
@@ -218,7 +210,7 @@ fun ProfileScreen(
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
-                            Text("📍", fontSize = 18.sp)
+                            Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("PIN ON MAP", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
@@ -370,10 +362,13 @@ fun MapPinningDialog(
 
                 // Center Pin
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "📍",
-                        fontSize = 48.sp,
-                        modifier = Modifier.offset(y = (-24).dp)
+                    Icon(
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = "Pin",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .offset(y = (-24).dp)
                     )
                 }
 
@@ -396,7 +391,7 @@ fun MapPinningDialog(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = onDismiss) {
-                            Text("✕", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }

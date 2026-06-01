@@ -5,7 +5,10 @@ import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.unit.em
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.model.ReminderImportance
@@ -45,7 +47,11 @@ fun RemindersScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("<", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -71,7 +77,7 @@ fun RemindersScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(bottom = 16.dp, end = 16.dp)
             ) {
-                Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Icon(Icons.Default.Add, contentDescription = "Add Reminder")
             }
         }
     ) { paddingValues ->
@@ -97,7 +103,10 @@ fun RemindersScreen(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 items(reminders) { reminder ->
-                    ReminderItem(reminder)
+                    ReminderItem(
+                        reminder = reminder,
+                        onDelete = { viewModel.deleteReminder(reminder.id) }
+                    )
                 }
             }
         }
@@ -105,7 +114,7 @@ fun RemindersScreen(
 }
 
 @Composable
-fun ReminderItem(reminder: Reminder) {
+fun ReminderItem(reminder: Reminder, onDelete: () -> Unit) {
     val indicatorColor = when (reminder.importance) {
         ReminderImportance.LOW -> Color.Gray
         ReminderImportance.MEDIUM -> Color(0xFF4CAF50)
@@ -128,7 +137,7 @@ fun ReminderItem(reminder: Reminder) {
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = reminder.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -139,6 +148,14 @@ fun ReminderItem(reminder: Reminder) {
                 text = reminder.description,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        IconButton(onClick = onDelete) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete Reminder",
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }

@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -17,6 +16,9 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+
+            // Icons
+            implementation(compose.materialIconsExtended)
 
             // Maps & Location (Open Source)
             implementation(libs.maplibre.compose)

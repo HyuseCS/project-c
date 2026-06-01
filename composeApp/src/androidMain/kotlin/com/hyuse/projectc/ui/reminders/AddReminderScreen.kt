@@ -4,15 +4,17 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,10 +23,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.hyuse.projectc.domain.model.ReminderImportance
 import com.hyuse.projectc.ui.components.AddressSearchDialog
@@ -35,6 +37,9 @@ import org.maplibre.compose.camera.*
 import org.maplibre.compose.map.MaplibreMap
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.spatialk.geojson.Position
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.pow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,12 +112,32 @@ fun AddReminderScreen(
             baseStyle = BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
         )
 
-        // Fixed center pin (Classic Location Pin)
+        // Fixed center pin + Radius Visualizer
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = "📍",
-                fontSize = 40.sp,
-                modifier = Modifier.offset(y = (-20).dp)
+            // Radius Circle: Dynamically calculated based on zoom and latitude
+            val lat = cameraState.position.target.latitude
+            val zoom = cameraState.position.zoom
+            val density = LocalDensity.current.density
+            
+            // MapLibre uses 512px tiles. MPP = (Equator / 512) * cos(lat) / 2^zoom
+            val metersPerPixel = 78271.51696 * cos(lat * PI / 180.0) / 2.0.pow(zoom)
+            val radiusPx = radius / metersPerPixel
+            val radiusDp = (radiusPx / density).toFloat().dp
+
+            Box(
+                modifier = Modifier
+                    .size(radiusDp * 2)
+                    .background(primaryColor.copy(alpha = 0.15f), CircleShape)
+                    .border(2.dp, primaryColor, CircleShape)
+            )
+
+            Icon(
+                imageVector = Icons.Filled.LocationOn,
+                contentDescription = "Pin",
+                tint = primaryColor,
+                modifier = Modifier
+                    .size(48.dp)
+                    .offset(y = (-24).dp)
             )
         }
 
@@ -133,7 +158,7 @@ fun AddReminderScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onNavigateBack) {
-                    Text("←", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 
                 // Search Trigger Bar
@@ -147,7 +172,7 @@ fun AddReminderScreen(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("🔍", fontSize = 16.sp)
+                        Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = if (selectedAddress.isEmpty()) "Search location..." else selectedAddress,

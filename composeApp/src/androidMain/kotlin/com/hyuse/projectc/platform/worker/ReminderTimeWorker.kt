@@ -2,7 +2,6 @@ package com.hyuse.projectc.platform.worker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.hyuse.projectc.domain.repository.ReminderRepository

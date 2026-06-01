@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.sp
 import com.hyuse.projectc.domain.model.WaterBillResult
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.Calendar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WaterDrop
 
 /**
  * Water Bill Calculator screen.
@@ -323,7 +325,12 @@ private fun ResultCard(result: WaterBillResult) {
                     )
                     Text("Total for ${result.consumption} m³", style = MaterialTheme.typography.bodySmall)
                 }
-                Text("💧", fontSize = 48.sp)
+                Icon(
+                    imageVector = Icons.Default.WaterDrop,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             }
         }
     }
@@ -339,8 +346,15 @@ private fun HistoryItem(result: WaterBillResult, periodText: String) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                imageVector = Icons.Default.WaterDrop,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
-                Text("💧 $periodText", fontWeight = FontWeight.Bold)
+                Text(periodText, fontWeight = FontWeight.Bold)
                 Text("${result.consumption} m³ @ ${result.currencySymbol}${result.ratePerCubicMeter}/m³", style = MaterialTheme.typography.bodySmall)
             }
             Text(

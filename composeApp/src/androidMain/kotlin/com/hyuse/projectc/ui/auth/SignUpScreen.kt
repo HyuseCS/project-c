@@ -1,9 +1,5 @@
 package com.hyuse.projectc.ui.auth
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,14 +20,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-/**
- * Sign Up screen with email, password, and confirm password fields.
- * Navigates to Home on success, or back to Login via text link.
- */
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.border
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.School
 
 @Composable
 fun SignUpScreen(
@@ -73,7 +63,12 @@ fun SignUpScreen(
                 Spacer(modifier = Modifier.height(60.dp))
 
                 // Friendly Branding
-                Text(text = "🎓", fontSize = 64.sp)
+                Icon(
+                    imageVector = Icons.Default.School,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Create Account",

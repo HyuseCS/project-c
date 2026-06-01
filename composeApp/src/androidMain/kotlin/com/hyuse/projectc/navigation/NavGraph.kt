@@ -1,14 +1,9 @@
 package com.hyuse.projectc.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +11,6 @@ import com.hyuse.projectc.ui.auth.AuthState
 import com.hyuse.projectc.ui.auth.AuthViewModel
 import com.hyuse.projectc.ui.auth.LoginScreen
 import com.hyuse.projectc.ui.auth.SignUpScreen
-import com.hyuse.projectc.ui.home.HomeState
 import com.hyuse.projectc.ui.home.HomeViewModel
 import com.hyuse.projectc.ui.home.HomeScreen
 import com.hyuse.projectc.ui.profile.ProfileScreen
