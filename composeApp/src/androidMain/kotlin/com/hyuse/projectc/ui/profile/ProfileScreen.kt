@@ -44,7 +44,8 @@ fun ProfileScreen(
     onBack: () -> Unit,
     onClearError: () -> Unit,
     onSaveSuccess: () -> Unit,
-    viewModel: ProfileViewModel = koinViewModel()
+    viewModel: ProfileViewModel = koinViewModel(),
+    showBackButton: Boolean = true
 ) {
     var name by rememberStringState("")
     var nickname by rememberStringState("")
@@ -83,8 +84,10 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text("Your Profile", fontWeight = FontWeight.Bold) },
                 actions = {
-                    TextButton(onClick = onBack) {
-                        Text("Back")
+                    if (showBackButton) {
+                        TextButton(onClick = onBack) {
+                            Text("Back")
+                        }
                     }
                 }
             )

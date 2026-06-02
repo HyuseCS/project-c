@@ -27,7 +27,8 @@ fun UtilitiesHubScreen(
     onNavigateToElectricityCalculator: () -> Unit,
     onNavigateToElectricityPredictor: () -> Unit,
     onNavigateToWaterCalculator: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    showBackButton: Boolean = true
 ) {
     Scaffold(
         topBar = {
@@ -41,8 +42,10 @@ fun UtilitiesHubScreen(
                     ) 
                 },
                 actions = {
-                    TextButton(onClick = onBack) {
-                        Text("CLOSE", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                    if (showBackButton) {
+                        TextButton(onClick = onBack) {
+                            Text("CLOSE", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

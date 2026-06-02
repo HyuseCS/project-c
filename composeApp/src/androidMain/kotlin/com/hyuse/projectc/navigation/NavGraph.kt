@@ -192,7 +192,8 @@ fun NavGraph(navController: NavHostController) {
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.PROFILE) { inclusive = true }
                         }
-                    }
+                    },
+                    showBackButton = false
                 )
             }
         }
@@ -210,7 +211,8 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onBack = {
                     navController.popBackStack()
-                }
+                },
+                showBackButton = false
             )
         }
 
@@ -359,7 +361,8 @@ fun NavGraph(navController: NavHostController) {
                     onAddExpense = { navController.navigate(Routes.ADD_EXPENSE) },
                     onManageCategories = { navController.navigate(Routes.MANAGE_CATEGORIES) },
                     onDeleteExpense = { id -> viewModel.deleteExpense(id) },
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    showBackButton = false
                 )
             }
         }
@@ -412,7 +415,8 @@ fun NavGraph(navController: NavHostController) {
         composable(Routes.REMINDERS_DASHBOARD) {
             RemindersScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToAddReminder = { route -> navController.navigate(route) }
+                onNavigateToAddReminder = { route -> navController.navigate(route) },
+                showBackButton = false
             )
         }
 

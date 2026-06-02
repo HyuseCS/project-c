@@ -30,7 +30,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun RemindersScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAddReminder: (String) -> Unit, // Changed to take a route string
-    viewModel: RemindersViewModel = koinViewModel()
+    viewModel: RemindersViewModel = koinViewModel(),
+    showBackButton: Boolean = true
 ) {
     val reminders by viewModel.reminders.collectAsState()
     val context = LocalContext.current
@@ -46,12 +47,14 @@ fun RemindersScreen(
                     ) 
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                    if (showBackButton) {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
