@@ -7,6 +7,7 @@ import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.model.ReminderImportance
 import com.hyuse.projectc.domain.repository.GeofenceManager
 import com.hyuse.projectc.domain.repository.ReminderRepository
+import com.hyuse.projectc.domain.repository.ReminderScheduler
 import com.hyuse.projectc.domain.usecase.ObserveProfileUseCase
 import com.hyuse.projectc.domain.usecase.GetCurrentUserUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class RemindersViewModel(
     private val reminderRepository: ReminderRepository,
     private val geofenceManager: GeofenceManager,
+    private val reminderScheduler: ReminderScheduler,
     private val observeProfileUseCase: ObserveProfileUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
@@ -89,6 +91,9 @@ class RemindersViewModel(
 
                 reminderRepository.saveReminder(reminder)
                 
+                // Schedule time-based work
+                reminderScheduler.scheduleReminder(reminder)
+                
                 // Re-register geofences (only if they exist)
                 val currentReminders = reminderRepository.getAllReminders()
                 val locationReminders = currentReminders.filter { it.location != null }
@@ -110,6 +115,8 @@ class RemindersViewModel(
         viewModelScope.launch {
             try {
                 reminderRepository.deleteReminder(id)
+                reminderScheduler.cancelReminder(id)
+                
                 val currentReminders = reminderRepository.getAllReminders()
                 val locationReminders = currentReminders.filter { it.location != null }
                 

@@ -25,8 +25,12 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -79,6 +83,15 @@ fun AddReminderScreen(
     var selectedAddress by remember { mutableStateOf("") }
     var showMapDialog by remember { mutableStateOf(false) }
 
+    // Time State
+    var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
+    var selectedTimeMillis by remember { mutableStateOf<Long?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val datePickerState = rememberDatePickerState()
+    val timePickerState = rememberTimePickerState()
+
     // Permission Launcher
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -111,8 +124,8 @@ fun AddReminderScreen(
                             viewModel.saveReminder(
                                 title = title.ifBlank { "Untitled Reminder" },
                                 description = description,
-                                dateMillis = System.currentTimeMillis(),
-                                timeMillis = 0L,
+                                dateMillis = selectedDateMillis ?: System.currentTimeMillis(),
+                                timeMillis = selectedTimeMillis ?: 0L,
                                 importance = importance,
                                 latitude = selectedLocation?.latitude,
                                 longitude = selectedLocation?.longitude,
@@ -185,9 +198,78 @@ fun AddReminderScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Time Trigger Section
+            Text(
+                text = "TIME TRIGGER",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
+            Surface(
+                onClick = { showDatePicker = true },
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccessTime,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    
+                    Column(modifier = Modifier.weight(1f)) {
+                        val dateText = selectedDateMillis?.let {
+                            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it))
+                        } ?: "Add Time Trigger"
+                        
+                        val timeText = selectedTimeMillis?.let {
+                            val hours = (it / (60 * 60 * 1000)).toInt()
+                            val minutes = ((it % (60 * 60 * 1000)) / (60 * 1000)).toInt()
+                            String.format("%02d:%02d", hours, minutes)
+                        } ?: ""
+
+                        Text(
+                            text = if (selectedDateMillis == null) "Add Time Trigger" else "$dateText $timeText",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (selectedDateMillis == null) "Receive a notification at a specific time" else "Time Reminder Set",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (selectedDateMillis != null) {
+                        IconButton(onClick = {
+                            selectedDateMillis = null
+                            selectedTimeMillis = null
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Remove time")
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Location Trigger Section
             Text(
-                text = "TRIGGER",
+                text = "LOCATION TRIGGER",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -299,6 +381,60 @@ fun AddReminderScreen(
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp)
                 )
+            }
+        }
+    }
+
+    // Date Picker Dialog
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedDateMillis = datePickerState.selectedDateMillis
+                    showDatePicker = false
+                    showTimePicker = true
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("CANCEL") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    // Time Picker Dialog
+    if (showTimePicker) {
+        Dialog(onDismissRequest = { showTimePicker = false }) {
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp,
+                modifier = Modifier.width(IntrinsicSize.Min).height(IntrinsicSize.Min)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Select Time",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 20.dp).align(Alignment.Start)
+                    )
+                    TimePicker(state = timePickerState)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showTimePicker = false }) { Text("CANCEL") }
+                        TextButton(onClick = {
+                            selectedTimeMillis = (timePickerState.hour * 60 * 60 * 1000L) + (timePickerState.minute * 60 * 1000L)
+                            showTimePicker = false
+                        }) { Text("OK") }
+                    }
+                }
             }
         }
     }

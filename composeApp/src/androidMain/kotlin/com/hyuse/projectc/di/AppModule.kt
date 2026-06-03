@@ -19,9 +19,12 @@ val appModule = module {
     // Database Driver Factory
     single { com.hyuse.projectc.data.database.DatabaseDriverFactory(get()) }
     
-    // Geofencing
+    // Geofencing & Scheduling
     single<com.hyuse.projectc.domain.repository.GeofenceManager> { 
         com.hyuse.projectc.platform.geofencing.GeofenceManagerImpl(get()) 
+    }
+    single<com.hyuse.projectc.domain.repository.ReminderScheduler> {
+        com.hyuse.projectc.platform.worker.ReminderSchedulerImpl(get())
     }
 
     viewModel { AuthViewModel(get(), get(), get(), get()) }
@@ -31,6 +34,6 @@ val appModule = module {
     viewModel { WaterBillViewModel(get(), get(), get(), get(), get()) }
     viewModel { ElectricityPredictorViewModel(get(), get()) }
     viewModel { ExpensesViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { RemindersViewModel(get(), get(), get(), get()) }
+    viewModel { RemindersViewModel(get(), get(), get(), get(), get()) }
 }
 
