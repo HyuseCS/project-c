@@ -1,0 +1,21 @@
+ALTER TABLE ReminderEntity RENAME TO ReminderEntity_old;
+
+CREATE TABLE ReminderEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    dateMillis INTEGER NOT NULL,
+    timeMillis INTEGER NOT NULL,
+    importance TEXT NOT NULL,
+    latitude REAL,
+    longitude REAL,
+    radius REAL,
+    lastTriggeredMillis INTEGER,
+    geofenceId TEXT
+);
+
+INSERT INTO ReminderEntity (id, title, description, dateMillis, timeMillis, importance, latitude, longitude, radius, lastTriggeredMillis, geofenceId)
+SELECT id, title, description, dateMillis, timeMillis, importance, latitude, longitude, radius, lastTriggeredMillis, geofenceId
+FROM ReminderEntity_old;
+
+DROP TABLE ReminderEntity_old;

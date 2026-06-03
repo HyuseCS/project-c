@@ -23,6 +23,14 @@ class ReminderRepositoryImpl(
             .mapToList(Dispatchers.Default)
             .map { entities ->
                 entities.map { entity ->
+                    val location = if (entity.latitude != null && entity.longitude != null && entity.radius != null) {
+                        LocationData(
+                            latitude = entity.latitude,
+                            longitude = entity.longitude,
+                            radius = entity.radius
+                        )
+                    } else null
+
                     Reminder(
                         id = entity.id,
                         title = entity.title,
@@ -30,11 +38,7 @@ class ReminderRepositoryImpl(
                         dateMillis = entity.dateMillis,
                         timeMillis = entity.timeMillis,
                         importance = ReminderImportance.valueOf(entity.importance),
-                        location = LocationData(
-                            latitude = entity.latitude,
-                            longitude = entity.longitude,
-                            radius = entity.radius
-                        ),
+                        location = location,
                         lastTriggeredMillis = entity.lastTriggeredMillis,
                         geofenceId = entity.geofenceId
                     )
@@ -44,6 +48,14 @@ class ReminderRepositoryImpl(
 
     override suspend fun getAllReminders(): List<Reminder> = withContext(Dispatchers.Default) {
         queries.getAllReminders().executeAsList().map { entity ->
+            val location = if (entity.latitude != null && entity.longitude != null && entity.radius != null) {
+                LocationData(
+                    latitude = entity.latitude,
+                    longitude = entity.longitude,
+                    radius = entity.radius
+                )
+            } else null
+
             Reminder(
                 id = entity.id,
                 title = entity.title,
@@ -51,11 +63,7 @@ class ReminderRepositoryImpl(
                 dateMillis = entity.dateMillis,
                 timeMillis = entity.timeMillis,
                 importance = ReminderImportance.valueOf(entity.importance),
-                location = LocationData(
-                    latitude = entity.latitude,
-                    longitude = entity.longitude,
-                    radius = entity.radius
-                ),
+                location = location,
                 lastTriggeredMillis = entity.lastTriggeredMillis,
                 geofenceId = entity.geofenceId
             )
@@ -64,6 +72,14 @@ class ReminderRepositoryImpl(
 
     override suspend fun getReminderById(id: String): Reminder? = withContext(Dispatchers.Default) {
         queries.getReminderById(id).executeAsOneOrNull()?.let { entity ->
+            val location = if (entity.latitude != null && entity.longitude != null && entity.radius != null) {
+                LocationData(
+                    latitude = entity.latitude,
+                    longitude = entity.longitude,
+                    radius = entity.radius
+                )
+            } else null
+
             Reminder(
                 id = entity.id,
                 title = entity.title,
@@ -71,11 +87,7 @@ class ReminderRepositoryImpl(
                 dateMillis = entity.dateMillis,
                 timeMillis = entity.timeMillis,
                 importance = ReminderImportance.valueOf(entity.importance),
-                location = LocationData(
-                    latitude = entity.latitude,
-                    longitude = entity.longitude,
-                    radius = entity.radius
-                ),
+                location = location,
                 lastTriggeredMillis = entity.lastTriggeredMillis,
                 geofenceId = entity.geofenceId
             )
@@ -90,9 +102,9 @@ class ReminderRepositoryImpl(
             dateMillis = reminder.dateMillis,
             timeMillis = reminder.timeMillis,
             importance = reminder.importance.name,
-            latitude = reminder.location.latitude,
-            longitude = reminder.location.longitude,
-            radius = reminder.location.radius,
+            latitude = reminder.location?.latitude,
+            longitude = reminder.location?.longitude,
+            radius = reminder.location?.radius,
             lastTriggeredMillis = reminder.lastTriggeredMillis,
             geofenceId = reminder.geofenceId
         )

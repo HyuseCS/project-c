@@ -7,7 +7,7 @@ data class Reminder(
     val dateMillis: Long,
     val timeMillis: Long,
     val importance: ReminderImportance,
-    val location: LocationData,
+    val location: LocationData?,
     val lastTriggeredMillis: Long? = null,
-    val geofenceId: String
+    val geofenceId: String?
 )

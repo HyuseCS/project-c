@@ -67,17 +67,18 @@ class CustomLocationService : Service() {
         serviceScope.launch {
             val reminders = reminderRepository.getAllReminders()
             reminders.forEach { reminder ->
+                val loc = reminder.location ?: return@forEach
                 val results = FloatArray(1)
                 Location.distanceBetween(
                     currentLocation.latitude,
                     currentLocation.longitude,
-                    reminder.location.latitude,
-                    reminder.location.longitude,
+                    loc.latitude,
+                    loc.longitude,
                     results
                 )
                 val distance = results[0]
 
-                if (distance <= reminder.location.radius) {
+                if (distance <= loc.radius) {
                     // Check if already triggered recently (within last 10 mins) to avoid spam
                     val now = System.currentTimeMillis()
                     val lastTriggered = reminder.lastTriggeredMillis ?: 0L

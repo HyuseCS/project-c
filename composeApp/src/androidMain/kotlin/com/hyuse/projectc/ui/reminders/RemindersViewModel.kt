@@ -55,9 +55,9 @@ class RemindersViewModel(
         dateMillis: Long,
         timeMillis: Long,
         importance: ReminderImportance,
-        latitude: Double,
-        longitude: Double,
-        radius: Double
+        latitude: Double?,
+        longitude: Double?,
+        radius: Double?
     ) {
         viewModelScope.launch {
             _uiState.value = RemindersUiState.Saving
@@ -69,25 +69,35 @@ class RemindersViewModel(
                     return@launch
                 }
 
-                // Create Geofence ID based on lat/lng (simple grouping)
-                val geofenceId = "geo_${latitude}_${longitude}"
+                // Create LocationData and Geofence ID if coordinates are provided
+                val location = if (latitude != null && longitude != null && radius != null) {
+                    LocationData(latitude, longitude, radius)
+                } else null
+                
+                val geofenceId = location?.let { "geo_${it.latitude}_${it.longitude}" }
 
                 val reminder = Reminder(
-                    id = UUID.randomUUID().toString(), // Simple UUID placeholder
+                    id = UUID.randomUUID().toString(),
                     title = title,
                     description = description,
                     dateMillis = dateMillis,
                     timeMillis = timeMillis,
                     importance = importance,
-                    location = LocationData(latitude, longitude, radius),
+                    location = location,
                     geofenceId = geofenceId
                 )
 
                 reminderRepository.saveReminder(reminder)
                 
-                // Re-register geofences
+                // Re-register geofences (only if they exist)
                 val currentReminders = reminderRepository.getAllReminders()
-                geofenceManager.registerGeofences(currentReminders)
+                val locationReminders = currentReminders.filter { it.location != null }
+                
+                if (locationReminders.isNotEmpty()) {
+                    geofenceManager.registerGeofences(locationReminders)
+                } else {
+                    geofenceManager.unregisterAllGeofences()
+                }
 
                 _uiState.value = RemindersUiState.Success
             } catch (e: Exception) {
@@ -101,11 +111,12 @@ class RemindersViewModel(
             try {
                 reminderRepository.deleteReminder(id)
                 val currentReminders = reminderRepository.getAllReminders()
+                val locationReminders = currentReminders.filter { it.location != null }
                 
-                if (currentReminders.isEmpty()) {
+                if (locationReminders.isEmpty()) {
                     geofenceManager.unregisterAllGeofences()
                 } else {
-                    geofenceManager.registerGeofences(currentReminders)
+                    geofenceManager.registerGeofences(locationReminders)
                 }
             } catch (e: Exception) {
                 _uiState.value = RemindersUiState.Error("Failed to delete reminder")

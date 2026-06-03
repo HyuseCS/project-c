@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.model.ReminderImportance
@@ -65,16 +67,7 @@ fun RemindersScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val hasFineLocation = ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                    
-                    if (hasFineLocation) {
-                        onNavigateToAddReminder(Routes.ADD_REMINDER)
-                    } else {
-                        onNavigateToAddReminder(Routes.PERMISSION_SCREEN)
-                    }
+                    onNavigateToAddReminder(Routes.ADD_REMINDER)
                 },
                 containerColor = MaterialTheme.colorScheme.primary, // Lucid Gold
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -152,6 +145,26 @@ fun ReminderItem(reminder: Reminder, onDelete: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (reminder.location != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Location Trigger Set",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 10.sp
+                    )
+                }
+            }
         }
         
         IconButton(onClick = onDelete) {
