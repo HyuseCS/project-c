@@ -65,7 +65,8 @@ fun ExpensesDashboardScreen(
                 onClick = onAddExpense,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.padding(bottom = 100.dp, end = 16.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Expense")
             }
@@ -116,7 +117,7 @@ fun ExpensesDashboardScreen(
                         } else {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 80.dp)
+                                contentPadding = PaddingValues(bottom = 120.dp)
                             ) {
                                 state.dailyGroups.forEach { dayGroup ->
                                     stickyHeader {

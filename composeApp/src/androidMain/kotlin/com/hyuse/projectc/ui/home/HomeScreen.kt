@@ -1,7 +1,6 @@
 package com.hyuse.projectc.ui.home
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,19 +12,14 @@ import androidx.compose.ui.geometry.CornerRadius
 import kotlinx.coroutines.launch
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hyuse.projectc.ui.theme.LucidSurface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Edit
+import com.hyuse.projectc.ui.components.LocalDrawerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,37 +35,10 @@ fun HomeScreen(
     onToggleInlineQuickAdd: (Boolean) -> Unit = {}
 ) {
     var isEditing by remember { mutableStateOf(false) }
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = LocalDrawerState.current
     val coroutineScope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(32.dp))
-                Text("MENU", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                NavigationDrawerItem(
-                    label = { Text("Edit Dashboard", fontWeight = FontWeight.Bold) },
-                    selected = false,
-                    onClick = {
-                        isEditing = true
-                        coroutineScope.launch { drawerState.close() }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-                NavigationDrawerItem(
-                    label = { Text("Logout", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold) },
-                    selected = false,
-                    onClick = {
-                        onLogout()
-                        coroutineScope.launch { drawerState.close() }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-            }
-        }
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         if (isEditing) {
             ModalBottomSheet(
                 onDismissRequest = { isEditing = false },
@@ -101,118 +68,106 @@ fun HomeScreen(
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
+                    actions = {
+                        IconButton(onClick = { isEditing = true }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Dashboard")
+                        }
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     )
                 )
             }
         ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            if (state.isLoading) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter))
-            } else if (state.isProfileMissing) {
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(32.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        "Ready to\nElevate?", 
-                        style = MaterialTheme.typography.headlineLarge, 
-                        fontWeight = FontWeight.ExtraBold,
-                        lineHeight = 40.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "Initialize your profile to begin.", 
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Button(
-                        onClick = onNavigateToProfile,
-                        modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                if (state.isLoading) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter))
+                } else if (state.isProfileMissing) {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(32.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        Text("GET STARTED", fontWeight = FontWeight.Bold)
-                    }
-                }
-            } else if (state.error != null) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Connection issue. Retrying...", style = MaterialTheme.typography.bodyLarge)
-                }
-            } else {
-                var visible by remember { mutableStateOf(false) }
-                LaunchedEffect(Unit) {
-                    visible = true
-                }
-                
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 32.dp),
-                    verticalArrangement = Arrangement.spacedBy(48.dp)
-                ) {
-                    items(state.widgets.size, key = { state.widgets[it].javaClass.name }) { index ->
-                        val widget = state.widgets[index]
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = visible,
-                            enter = androidx.compose.animation.slideInVertically(
-                                initialOffsetY = { 50 },
-                                animationSpec = androidx.compose.animation.core.tween(
-                                    durationMillis = 600,
-                                    delayMillis = index * 100,
-                                    easing = androidx.compose.animation.core.FastOutSlowInEasing
-                                )
-                            ) + androidx.compose.animation.fadeIn(
-                                animationSpec = androidx.compose.animation.core.tween(
-                                    durationMillis = 600,
-                                    delayMillis = index * 100
-                                )
-                            )
+                        Text(
+                            "Ready to\nElevate?", 
+                            style = MaterialTheme.typography.headlineLarge, 
+                            fontWeight = FontWeight.ExtraBold,
+                            lineHeight = 40.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "Initialize your profile to begin.", 
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Button(
+                            onClick = onNavigateToProfile,
+                            modifier = Modifier.height(56.dp).fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp)
                         ) {
-                            when (widget) {
-                            is DashboardWidget.WelcomeWidget -> {
-                                WelcomeHero(widget = widget)
-                            }
-                            is DashboardWidget.QuickActionsWidget -> {
-                                Column {
-                                    QuickActionsLucid(
-                                        actions = widget.actions,
-                                        onNavigateToUtilities = onNavigateToUtilities,
-                                        onNavigateToProfile = onNavigateToProfile,
-                                        onNavigateToExpenses = onNavigateToExpenses,
-                                        onNavigateToReminders = onNavigateToReminders,
-                                        onToggleInlineQuickAdd = onToggleInlineQuickAdd
+                            Text("GET STARTED", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                } else if (state.error != null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Connection issue. Retrying...", style = MaterialTheme.typography.bodyLarge)
+                    }
+                } else {
+                    var visible by remember { mutableStateOf(false) }
+                    LaunchedEffect(Unit) {
+                        visible = true
+                    }
+                    
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 120.dp),
+                        verticalArrangement = Arrangement.spacedBy(48.dp)
+                    ) {
+                        items(state.widgets.size, key = { state.widgets[it].javaClass.name }) { index ->
+                            val widget = state.widgets[index]
+                            androidx.compose.animation.AnimatedVisibility(
+                                visible = visible,
+                                enter = androidx.compose.animation.slideInVertically(
+                                    initialOffsetY = { 50 },
+                                    animationSpec = androidx.compose.animation.core.tween(
+                                        durationMillis = 600,
+                                        delayMillis = index * 100,
+                                        easing = androidx.compose.animation.core.FastOutSlowInEasing
                                     )
-                                    
-                                    if (state.showInlineQuickAddExpense) {
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        InlineQuickAddExpense(
-                                            onAdd = onQuickAddExpense,
-                                            onCancel = { onToggleInlineQuickAdd(false) }
+                                ) + androidx.compose.animation.fadeIn(
+                                    animationSpec = androidx.compose.animation.core.tween(
+                                        durationMillis = 600,
+                                        delayMillis = index * 100
+                                    )
+                                )
+                            ) {
+                                when (widget) {
+                                    is DashboardWidget.WelcomeWidget -> {
+                                        WelcomeHero(widget = widget)
+                                    }
+                                    is DashboardWidget.ElectricityGraphWidget -> {
+                                        UsageInsights(
+                                            title = "Electricity",
+                                            dataPoints = widget.dataPoints,
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
+                                    is DashboardWidget.WaterUsageWidget -> {
+                                        UsageInsights(
+                                            title = "Water Usage",
+                                            dataPoints = widget.dataPoints,
+                                            color = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }
+                                    is DashboardWidget.ExpenseSummaryWidget -> {
+                                        SpendingOverview(summary = widget.summary)
+                                    }
+                                    is DashboardWidget.RecentActivityFeedWidget -> {
+                                        ActivityFeed(activities = widget.activities)
+                                    }
+                                    else -> {} // QuickActionsWidget is now handled globally in the sidebar
                                 }
-                            }
-                            is DashboardWidget.ElectricityGraphWidget -> {
-                                UsageInsights(
-                                    title = "Electricity",
-                                    dataPoints = widget.dataPoints,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            is DashboardWidget.WaterUsageWidget -> {
-                                UsageInsights(
-                                    title = "Water Usage",
-                                    dataPoints = widget.dataPoints,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                            is DashboardWidget.ExpenseSummaryWidget -> {
-                                SpendingOverview(summary = widget.summary)
-                            }
-                            is DashboardWidget.RecentActivityFeedWidget -> {
-                                ActivityFeed(activities = widget.activities)
                             }
                         }
                     }
@@ -220,8 +175,6 @@ fun HomeScreen(
             }
         }
     }
-}
-}
 }
 
 @Composable
@@ -393,85 +346,6 @@ fun ActivityFeed(activities: List<RecentActivity>) {
     }
 }
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
-@Composable
-fun QuickActionsLucid(
-    actions: List<ActionItem>,
-    onNavigateToUtilities: () -> Unit,
-    onNavigateToProfile: () -> Unit,
-    onNavigateToExpenses: () -> Unit = {},
-    onNavigateToReminders: () -> Unit = {},
-    onToggleInlineQuickAdd: (Boolean) -> Unit = {}
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "QUICK ACTIONS",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            actions.forEach { action ->
-                LucidSurface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(100.dp),
-                    alphaPrimary = 0.3f,
-                    alphaSecondary = 0.1f
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .combinedClickable(
-                                onClick = {
-                                    when (action.route) {
-                                        "utilities" -> onNavigateToUtilities()
-                                        "profile" -> onNavigateToProfile()
-                                        "expenses" -> onNavigateToExpenses()
-                                        "reminders" -> onNavigateToReminders()
-                                    }
-                                },
-                                onLongClick = {
-                                    if (action.route == "expenses") onToggleInlineQuickAdd(true)
-                                }
-                            )
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        val icon = when (action.iconKey) {
-                            "utilities" -> Icons.Default.Build
-                            "expenses" -> Icons.Default.AccountBalanceWallet
-                            "reminders" -> Icons.Default.LocationOn
-                            "profile" -> Icons.Default.Person
-                            else -> Icons.Default.Build
-                        }
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = action.title,
-                            modifier = Modifier.size(28.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            action.title.uppercase(),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun DashboardEditorContent(
     availableWidgets: List<String>,
@@ -534,56 +408,3 @@ fun DashboardEditorContent(
     }
 }
 
-@Composable
-fun InlineQuickAddExpense(onAdd: (Double, String) -> Unit, onCancel: () -> Unit) {
-    var amount by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("Quick Entry") }
-
-    LucidSurface(
-        modifier = Modifier.fillMaxWidth(),
-        alphaPrimary = 0.5f,
-        alphaSecondary = 0.2f
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                "QUICK EXPENSE",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            OutlinedTextField(
-                value = amount,
-                onValueChange = { amount = it },
-                label = { Text("Amount") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = category,
-                onValueChange = { category = it },
-                label = { Text("Category") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = onCancel) {
-                    Text("CANCEL")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        val parsedAmount = amount.toDoubleOrNull()
-                        if (parsedAmount != null && parsedAmount > 0) {
-                            onAdd(parsedAmount, category)
-                        }
-                    }
-                ) {
-                    Text("SAVE", fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-    }
-}

@@ -78,7 +78,7 @@ fun RemindersScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary, // Lucid Gold
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(bottom = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(bottom = 100.dp, end = 16.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Reminder")
             }
@@ -101,8 +101,8 @@ fun RemindersScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 24.dp),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 0.dp, bottom = 120.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 items(reminders) { reminder ->

@@ -58,7 +58,7 @@ fun UtilitiesHubScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
             Text(
