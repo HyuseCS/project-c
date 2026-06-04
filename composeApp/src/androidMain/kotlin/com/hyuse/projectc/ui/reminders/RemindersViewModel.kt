@@ -71,15 +71,16 @@ class RemindersViewModel(
                     return@launch
                 }
 
-                // Create LocationData and Geofence ID if coordinates are provided
+                val reminderId = UUID.randomUUID().toString()
+
                 val location = if (latitude != null && longitude != null && radius != null) {
                     LocationData(latitude, longitude, radius)
                 } else null
                 
-                val geofenceId = location?.let { "geo_${it.latitude}_${it.longitude}" }
+                val geofenceId = location?.let { "geo_$reminderId" }
 
                 val reminder = Reminder(
-                    id = UUID.randomUUID().toString(),
+                    id = reminderId,
                     title = title,
                     description = description,
                     dateMillis = dateMillis,

@@ -21,9 +21,15 @@ class BootCompletedReceiver : BroadcastReceiver(), KoinComponent {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.d("BootCompletedReceiver", "Device booted. Re-registering geofences...")
             
+            val pendingResult = goAsync()
+            
             CoroutineScope(Dispatchers.IO).launch {
-                val reminders = reminderRepository.getAllReminders()
-                geofenceManager.registerGeofences(reminders)
+                try {
+                    val reminders = reminderRepository.getAllReminders()
+                    geofenceManager.registerGeofences(reminders)
+                } finally {
+                    pendingResult.finish()
+                }
             }
         }
     }

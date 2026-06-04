@@ -23,6 +23,10 @@ kotlin {
             // Maps & Location (Open Source)
             implementation(libs.maplibre.compose)
 
+            // Play Services Location
+            implementation(libs.play.services.location)
+            implementation(libs.kotlinx.coroutines.play.services)
+
             // WorkManager
             implementation(libs.work.runtime.ktx)
         }

@@ -71,7 +71,20 @@ fun RemindersScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onNavigateToAddReminder(Routes.ADD_REMINDER)
+                    val hasFineLocation = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                    val hasBackgroundLocation = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q || ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                    
+                    if (hasFineLocation && hasBackgroundLocation) {
+                        onNavigateToAddReminder(Routes.ADD_REMINDER)
+                    } else {
+                        onNavigateToAddReminder(Routes.PERMISSION_SCREEN)
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.primary, // Lucid Gold
                 contentColor = MaterialTheme.colorScheme.onPrimary,

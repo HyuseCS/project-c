@@ -37,6 +37,9 @@ ktor = "3.1.1"
 # Maps & Location (Open Source)
 maplibreCompose = "0.13.0"
 
+# Play Services Location
+playServicesLocation = "21.3.0"
+
 # WorkManager
 workManager = "2.10.0"
 secretsGradlePlugin = "2.0.1"
@@ -96,6 +99,9 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 
 # Maps & Location (Open Source)
 maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "maplibreCompose" }
+
+# Play Services
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 # WorkManager
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManager" }
