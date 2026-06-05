@@ -1,41 +1,40 @@
 ---
 name: Project C
-description: A premium, sophisticated student companion with a lucid, glassy aesthetic.
+description: A premium, sophisticated student companion with a "Mobile Cinema OLED" aesthetic.
 colors:
-  primary: "#6200EE" # Lucid Indigo (Vibrant but deep)
+  primary: "#A16207" # Lucid Gold (OLED Accent)
   on-primary: "#FFFFFF"
-  primary-container: "#F0E7FF"
-  on-primary-container: "#21005D"
-  surface: "#FCFCFF" # Lucid White (Cool-tinted neutral)
-  on-surface: "#1A1C1E"
-  surface-variant: "#E1E2EC" # Lucid Gray
-  on-surface-variant: "#44474E"
-  outline: "#74777F"
-  error: "#B3261E"
+  secondary: "#1C1917" # Muted Slate (Surface Background)
+  on-secondary: "#E8ECF0"
+  background: "#0C0A09" # Deep OLED Black
+  on-background: "#FFFFFF"
+  surface: "#0C0A09"
+  on-surface: "#FFFFFF"
+  surface-variant: "#1E293B"
+  on-surface-variant: "#F8FAFC"
+  error: "#DC2626"
 typography:
   headline:
     fontFamily: "sans-serif"
     fontSize: "32sp"
-    fontWeight: 800
-    letterSpacing: "-0.02em"
+    fontWeight: 600
+    letterSpacing: "-0.5sp"
   title:
     fontFamily: "sans-serif"
-    fontSize: "20sp"
-    fontWeight: 700
+    fontSize: "24sp"
+    fontWeight: 600
   body:
     fontFamily: "sans-serif"
     fontSize: "16sp"
     fontWeight: 400
-    lineHeight: "24sp"
   label:
     fontFamily: "sans-serif"
     fontSize: "12sp"
-    fontWeight: 600
-    textTransform: "uppercase"
-    letterSpacing: "0.05em"
+    fontWeight: 500
+    letterSpacing: "1.2sp"
 rounded:
-  sm: "12px"
-  md: "20px"
+  sm: "8px"
+  md: "12px"
   lg: "32px"
 spacing:
   xs: "4px"
@@ -45,74 +44,8 @@ spacing:
   xl: "64px"
 components:
   lucid-glass:
-    backgroundColor: "rgba(255, 255, 255, 0.7)"
-    blur: "20px"
-    rounded: "{rounded.lg}"
-    border: "1px solid rgba(255, 255, 255, 0.3)"
-  invisible-container:
-    padding: "{spacing.md}"
-    backgroundColor: "transparent"
----
-
-# Design System: Project C (Lucid Glass)
-
-## 1. Overview
-
-**Creative North Star: "The Lucid Lens"**
-
-Project C is a premium "Lucid Lens" through which students view and manage their lives. It moves away from the clutter of "basic" apps by utilizing **Invisible Hierarchy**—where information is separated by generous whitespace and bold typography rather than bounding boxes. For high-priority information, we use **Tactile Glass** components that feel layered and sophisticated.
-
-**Key Characteristics:**
-- **Invisible Containers**: Use whitespace and strong typographic scale (800 weight headlines) to define areas.
-- **Lucid Color Strategy**: A neutral base with a single, high-contrast accent (Lucid Indigo) that signifies action and focus.
-- **Tactile Depth**: Subtle transparency and layering create a sense of premium build quality.
-
-## 2. Colors
-
-A "Restrained" strategy that prioritizes focus and harmony.
-
-### Primary: Lucid Indigo
-- **Lucid Indigo** (#6200EE): A vibrant, deep purple that provides high contrast against the neutral base. Used for primary calls to action.
-
-### Neutral: Lucid Neutrals
-- **Lucid White** (#FCFCFF): A cool, crisp white that feels modern and premium.
-- **Lucid Gray** (#E1E2EC): Used for subtle tonal layering and secondary backgrounds.
-
-**The Contrast Rule.** The primary accent must maintain a minimum 4.5:1 contrast ratio (WCAG AA) against all surface colors to ensure accessibility and professional polish.
-
-## 3. Typography
-
-Typography is the primary UI driver. We use extreme weight and scale contrast.
-
-### Hierarchy
-- **Headline** (800, 32sp, -0.02em): Main titles. Large, bold, and authoritative.
-- **Title** (700, 20sp): Section headers.
-- **Body** (400, 16sp): Highly legible, with generous line-height (24sp).
-- **Label** (600, 12sp, Uppercase): Technical metadata and small UI hints.
-
-## 4. Elevation & Surface
-
-**The Lucid Layering Rule.** Avoid solid shadows. Use transparency and tonal differences (Lucid White vs. Lucid Gray) to show depth. "Glassy" components should use a semi-transparent white base with a very subtle border.
-
-## 5. Components
-
-### Lucid Glass Surfaces
-- **Shape**: Extra large rounded corners (32px).
-- **Style**: 70% transparency with a subtle "inner glow" border (1px white at 30% opacity).
-- **Use Case**: Primary Hero stats and floating action panels.
-
-### Invisible List Items
-- **Style**: No bounding box. Separated by MD spacing (24dp) and subtle dividers.
-
-## 6. Do's and Don'ts
-
-### Do:
-- **Do** use massive whitespace (40dp - 64dp) between major sections.
-- **Do** use typography as the primary means of grouping information.
-- **Do** ensure every color choice feels intentional and harmonious.
-
-### Don't:
-- **Don't** use solid-color cards for every piece of data.
-- **Don't** use "basic" consumer colors (safe blues, generic greens).
-- **Don't** use tight, cluttered layouts.
-- **Don't** use rounded corners smaller than 12px for prominent elements.
+    backgroundColor: "rgba(255, 255, 255, 0.08)"
+    blur: "15dp"
+    rounded: "32dp"
+    border: "1px solid rgba(255, 255, 255, 0.15)"
+---\n\n# Design System: Project C (Mobile Cinema OLED)\n\n## 1. Overview\n\n**Creative North Star: "The Cinema Lens"**\n\nProject C utilizes a "Mobile Cinema" aesthetic—designed for high-end OLED displays and nighttime utility. The UI is built on a foundation of **Deep OLED Black**, prioritizing battery efficiency and eye comfort. We use **Lucid Gold** as a singular, precious accent color that cuts through the darkness, signifying action and importance.\n\n**Key Characteristics:**\n- **OLED First**: Pure black backgrounds (#0C0A09) to minimize light emission.\n- **Gold Standard**: A "Committed" color strategy where Lucid Gold carries the brand identity.\n- **Dark Tactile Glass**: Semi-transparent overlays use a white tint at 8% opacity to create depth on dark surfaces.\n\n## 2. Colors\n\n### Primary: Lucid Gold\n- **Lucid Gold** (#A16207): A rich, deep gold that feels premium and focused.\n\n### Neutral: OLED Neutrals\n- **Deep OLED** (#0C0A09): The core background color. Pure black.\n- **Muted Slate** (#1C1917): Used for card surfaces and secondary backgrounds to provide subtle contrast.\n\n## 3. Typography\n\n### Hierarchy\n- **Headline** (SemiBold, 32sp, -0.5sp): Bold and clear.\n- **Title** (SemiBold, 24sp): Section-level emphasis.\n- **Body** (Normal, 16sp): Highly legible.\n- **Label** (Medium, 12sp, 1.2sp): Metadata and system hints.\n\n## 4. Components\n\n### Lucid Glass (Dark Mode)\n- **Shape**: Large rounded corners (32dp).\n- **Style**: 8% white opacity with a 15% white border. This creates a "frosted glass" look that is visible on black backgrounds.\n\n### Interaction States\n- **Primary CTA**: Solid Lucid Gold with white text.\n- **Secondary Actions**: Translucent slate or glass surfaces.\n

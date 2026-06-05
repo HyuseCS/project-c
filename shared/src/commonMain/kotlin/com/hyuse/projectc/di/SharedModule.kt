@@ -1,14 +1,12 @@
 package com.hyuse.projectc.di
 
-import com.hyuse.projectc.data.repository.AuthRepositoryImpl
-import com.hyuse.projectc.data.repository.CalculatorRepositoryImpl
-import com.hyuse.projectc.data.repository.ExpenseRepositoryImpl
-import com.hyuse.projectc.data.repository.ProfileRepositoryImpl
-import com.hyuse.projectc.domain.repository.AuthRepository
-import com.hyuse.projectc.domain.repository.CalculatorRepository
-import com.hyuse.projectc.domain.repository.ExpenseRepository
-import com.hyuse.projectc.domain.repository.ProfileRepository
+import com.hyuse.projectc.data.repository.*
+import com.hyuse.projectc.domain.repository.*
 import com.hyuse.projectc.domain.usecase.*
+import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 /**
@@ -16,11 +14,34 @@ import org.koin.dsl.module
  * Provides repositories and use cases available to all platforms.
  */
 val sharedModule = module {
+    // Networking
+    single { 
+        HttpClient {
+            install(ContentNegotiation) {
+                json(Json { 
+                    ignoreUnknownKeys = true 
+                    coerceInputValues = true
+                })
+            }
+        }
+    }
+    single<GeocodingRepository> { GeocodingRepositoryImpl(get()) }
+
     // Repositories — singletons
     single<AuthRepository> { AuthRepositoryImpl() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single<CalculatorRepository> { CalculatorRepositoryImpl() }
     single<ExpenseRepository> { ExpenseRepositoryImpl() }
+    
+    // Database & Local Repositories
+    single { 
+        com.hyuse.projectc.shared.database.ProjectCDatabase(
+            driver = get<com.hyuse.projectc.data.database.DatabaseDriverFactory>().createDriver()
+        ) 
+    }
+    single<com.hyuse.projectc.domain.repository.ReminderRepository> { 
+        com.hyuse.projectc.data.repository.ReminderRepositoryImpl(get()) 
+    }
 
     // Auth use cases — factory
     factory { SignUpUseCase(get()) }
@@ -32,6 +53,7 @@ val sharedModule = module {
     factory { GetProfileUseCase(get()) }
     factory { SaveProfileUseCase(get()) }
     factory { ObserveProfileUseCase(get()) }
+    factory { SearchAddressUseCase(get()) }
 
     // Calculator use cases — factory
     factory { CalculateElectricityBillUseCase() }
@@ -52,4 +74,7 @@ val sharedModule = module {
     factory { ObserveMonthlyExpensesUseCase(get()) }
     factory { GetMergedCategoriesUseCase(get()) }
     factory { SaveCustomCategoryUseCase(get()) }
+
+    // Reminder use cases — factory
+    factory { EvaluateTriggerUseCase() }
 }

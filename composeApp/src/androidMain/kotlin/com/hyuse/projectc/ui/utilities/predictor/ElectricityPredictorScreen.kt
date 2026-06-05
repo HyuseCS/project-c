@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.hyuse.projectc.domain.model.ElectricityAppliance
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.Locale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +46,7 @@ fun ElectricityPredictorScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
-                Text("➕", modifier = Modifier.padding(4.dp))
+                Icon(Icons.Default.Add, contentDescription = "Add Appliance")
             }
         }
     ) { paddingValues ->

@@ -1,0 +1,29 @@
+CREATE TABLE ReminderEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    dateMillis INTEGER NOT NULL,
+    timeMillis INTEGER NOT NULL,
+    importance TEXT NOT NULL,
+    latitude REAL,
+    longitude REAL,
+    radius REAL,
+    lastTriggeredMillis INTEGER,
+    geofenceId TEXT
+);
+
+insertReminder:
+INSERT OR REPLACE INTO ReminderEntity(id, title, description, dateMillis, timeMillis, importance, latitude, longitude, radius, lastTriggeredMillis, geofenceId)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getAllReminders:
+SELECT * FROM ReminderEntity;
+
+getReminderById:
+SELECT * FROM ReminderEntity WHERE id = ?;
+
+deleteReminder:
+DELETE FROM ReminderEntity WHERE id = ?;
+
+updateLastTriggered:
+UPDATE ReminderEntity SET lastTriggeredMillis = ? WHERE id = ?;

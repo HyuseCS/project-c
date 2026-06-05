@@ -16,9 +16,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hyuse.projectc.domain.model.WaterBillResult
 import java.util.Locale
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.WaterDrop
 
 /**
  * Screen dedicated to showing the full water bill history.
@@ -55,7 +58,12 @@ fun WaterBillHistoryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("💧", fontSize = 64.sp)
+                    Icon(
+                        imageVector = Icons.Default.WaterDrop,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         "No history yet",
@@ -110,10 +118,11 @@ fun WaterBillHistoryScreen(
                                     .padding(horizontal = 24.dp),
                                 contentAlignment = alignment
                             ) {
-                                Text(
-                                    "🗑️",
-                                    modifier = Modifier.scale(scale),
-                                    fontSize = 24.sp
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    modifier = Modifier.size(24.dp).scale(scale),
+                                    tint = Color.White
                                 )
                             }
                         },
@@ -148,12 +157,21 @@ private fun HistoryCard(result: WaterBillResult, periodText: String) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "💧 $periodText",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.WaterDrop,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = periodText,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
                 Text(
                     text = "${result.currencySymbol}${String.format(Locale.getDefault(), "%,.2f", result.totalCost)}",
                     style = MaterialTheme.typography.titleMedium,

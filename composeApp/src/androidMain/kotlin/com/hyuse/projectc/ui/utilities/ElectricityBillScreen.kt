@@ -18,6 +18,8 @@ import com.hyuse.projectc.domain.model.ElectricityBillResult
 import org.koin.compose.viewmodel.koinViewModel
 import java.util.Calendar
 import java.util.Locale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 
 /**
  * Electricity Bill Calculator screen.
@@ -392,12 +394,21 @@ private fun HistoryItem(result: ElectricityBillResult, periodText: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(
-                    text = "⚡ $periodText",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Bolt,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = periodText,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Text(
                     text = "${formatNumber(result.consumption)} kWh",
                     style = MaterialTheme.typography.bodyMedium,

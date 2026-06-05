@@ -1,14 +1,9 @@
 package com.hyuse.projectc.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +11,6 @@ import com.hyuse.projectc.ui.auth.AuthState
 import com.hyuse.projectc.ui.auth.AuthViewModel
 import com.hyuse.projectc.ui.auth.LoginScreen
 import com.hyuse.projectc.ui.auth.SignUpScreen
-import com.hyuse.projectc.ui.home.HomeState
 import com.hyuse.projectc.ui.home.HomeViewModel
 import com.hyuse.projectc.ui.home.HomeScreen
 import com.hyuse.projectc.ui.profile.ProfileScreen
@@ -30,6 +24,8 @@ import com.hyuse.projectc.ui.utilities.WaterBillScreen
 import com.hyuse.projectc.ui.utilities.WaterBillViewModel
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorScreen
 import com.hyuse.projectc.ui.utilities.predictor.ElectricityPredictorViewModel
+import com.hyuse.projectc.ui.reminders.AddReminderScreen
+import com.hyuse.projectc.ui.reminders.RemindersScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -49,6 +45,9 @@ object Routes {
     const val EXPENSES_DASHBOARD = "expenses_dashboard"
     const val ADD_EXPENSE = "add_expense"
     const val MANAGE_CATEGORIES = "manage_categories"
+    const val REMINDERS_DASHBOARD = "reminders_dashboard"
+    const val ADD_REMINDER = "add_reminder"
+    const val PERMISSION_SCREEN = "permission_screen"
 }
 
 /**
@@ -143,6 +142,9 @@ fun NavGraph(navController: NavHostController) {
                     onNavigateToExpenses = {
                         navController.navigate(Routes.EXPENSES_DASHBOARD)
                     },
+                    onNavigateToReminders = {
+                        navController.navigate(Routes.REMINDERS_DASHBOARD)
+                    },
                     onQuickAddExpense = { amount, category ->
                         homeViewModel.quickAddExpense(amount, category)
                     },
@@ -166,7 +168,7 @@ fun NavGraph(navController: NavHostController) {
                 ProfileScreen(
                     user = user,
                     profileState = profileState,
-                    onSave = { name, nickname, university, course, currencySymbol ->
+                    onSave = { name, nickname, university, course, currencySymbol, address, lat, lng ->
                         profileViewModel.saveProfile(
                             uid = user.uid,
                             name = name,
@@ -174,7 +176,10 @@ fun NavGraph(navController: NavHostController) {
                             email = user.email,
                             university = university,
                             course = course,
-                            currencySymbol = currencySymbol
+                            currencySymbol = currencySymbol,
+                            address = address,
+                            homeLatitude = lat,
+                            homeLongitude = lng
                         )
                     },
                     onBack = {
@@ -187,7 +192,8 @@ fun NavGraph(navController: NavHostController) {
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.PROFILE) { inclusive = true }
                         }
-                    }
+                    },
+                    showBackButton = false
                 )
             }
         }
@@ -205,7 +211,8 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onBack = {
                     navController.popBackStack()
-                }
+                },
+                showBackButton = false
             )
         }
 
@@ -354,7 +361,8 @@ fun NavGraph(navController: NavHostController) {
                     onAddExpense = { navController.navigate(Routes.ADD_EXPENSE) },
                     onManageCategories = { navController.navigate(Routes.MANAGE_CATEGORIES) },
                     onDeleteExpense = { id -> viewModel.deleteExpense(id) },
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    showBackButton = false
                 )
             }
         }
@@ -402,6 +410,33 @@ fun NavGraph(navController: NavHostController) {
                     onBack = { navController.popBackStack() }
                 )
             }
+        }
+
+        composable(Routes.REMINDERS_DASHBOARD) {
+            RemindersScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddReminder = { route -> navController.navigate(route) },
+                showBackButton = false
+            )
+        }
+
+        composable(Routes.ADD_REMINDER) {
+            AddReminderScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.PERMISSION_SCREEN) {
+            com.hyuse.projectc.ui.reminders.PermissionScreen(
+                onPermissionsGranted = {
+                    navController.navigate(Routes.ADD_REMINDER) {
+                        popUpTo(Routes.PERMISSION_SCREEN) { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

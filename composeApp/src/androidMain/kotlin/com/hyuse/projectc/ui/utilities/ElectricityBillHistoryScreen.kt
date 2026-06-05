@@ -16,9 +16,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hyuse.projectc.domain.model.ElectricityBillResult
 import java.util.Locale
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Delete
 
 /**
  * Screen dedicated to showing the full electricity bill history.
@@ -107,10 +110,11 @@ fun ElectricityBillHistoryScreen(
                                     .padding(horizontal = 24.dp),
                                 contentAlignment = alignment
                             ) {
-                                Text(
-                                    "🗑️",
-                                    modifier = Modifier.scale(scale),
-                                    fontSize = 24.sp
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    modifier = Modifier.size(24.dp).scale(scale),
+                                    tint = Color.White
                                 )
                             }
                         },
@@ -142,12 +146,21 @@ private fun HistoryCard(result: ElectricityBillResult, periodText: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(
-                    text = "⚡ $periodText",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Bolt,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = periodText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${formatNumber(result.consumption)} kWh",

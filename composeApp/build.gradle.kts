@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,11 +8,7 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
+    androidTarget()
     
     sourceSets {
         androidMain.dependencies {
@@ -21,6 +16,19 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+
+            // Icons
+            implementation(compose.materialIconsExtended)
+
+            // Maps & Location (Open Source)
+            implementation(libs.maplibre.compose)
+
+            // Play Services Location
+            implementation(libs.play.services.location)
+            implementation(libs.kotlinx.coroutines.play.services)
+
+            // WorkManager
+            implementation(libs.work.runtime.ktx)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

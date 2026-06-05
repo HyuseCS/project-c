@@ -2,9 +2,11 @@ package com.hyuse.projectc.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hyuse.projectc.domain.model.PhotonFeature
 import com.hyuse.projectc.domain.model.UserProfile
 import com.hyuse.projectc.domain.usecase.GetProfileUseCase
 import com.hyuse.projectc.domain.usecase.SaveProfileUseCase
+import com.hyuse.projectc.domain.usecase.SearchAddressUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,11 +37,18 @@ sealed class ProfileState {
  */
 class ProfileViewModel(
     private val getProfileUseCase: GetProfileUseCase,
-    private val saveProfileUseCase: SaveProfileUseCase
+    private val saveProfileUseCase: SaveProfileUseCase,
+    private val searchAddressUseCase: SearchAddressUseCase
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow<ProfileState>(ProfileState.Idle)
     val profileState: StateFlow<ProfileState> = _profileState.asStateFlow()
+
+    private val _searchResults = MutableStateFlow<List<PhotonFeature>>(emptyList())
+    val searchResults: StateFlow<List<PhotonFeature>> = _searchResults.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
     /**
      * Loads the profile for the given [uid].
@@ -61,9 +70,41 @@ class ProfileViewModel(
     }
 
     /**
+     * Performs a debounced search for addresses using Photon API.
+     */
+    fun searchAddress(query: String) {
+        if (query.isBlank() || query.length < 2) {
+            _searchResults.value = emptyList()
+            return
+        }
+
+        viewModelScope.launch {
+            _isSearching.value = true
+            try {
+                _searchResults.value = searchAddressUseCase(query)
+            } catch (e: Exception) {
+                _searchResults.value = emptyList()
+            } finally {
+                _isSearching.value = false
+            }
+        }
+    }
+
+    /**
      * Saves or updates the user profile.
      */
-    fun saveProfile(uid: String, name: String, nickname: String, email: String, university: String, course: String, currencySymbol: String) {
+    fun saveProfile(
+        uid: String,
+        name: String,
+        nickname: String,
+        email: String,
+        university: String,
+        course: String,
+        currencySymbol: String,
+        address: String = "",
+        homeLatitude: Double? = null,
+        homeLongitude: Double? = null
+    ) {
         if (name.isBlank() || university.isBlank() || course.isBlank()) {
             _profileState.value = ProfileState.Error("All fields are required")
             return
@@ -79,7 +120,10 @@ class ProfileViewModel(
                     email = email.trim(),
                     university = university.trim(),
                     course = course.trim(),
-                    currencySymbol = currencySymbol
+                    currencySymbol = currencySymbol,
+                    address = address.trim(),
+                    homeLatitude = homeLatitude,
+                    homeLongitude = homeLongitude
                 )
                 saveProfileUseCase(profile)
                 _profileState.value = ProfileState.SaveSuccess

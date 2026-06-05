@@ -21,6 +21,12 @@ import java.util.Locale
 
 import com.hyuse.projectc.ui.theme.LucidSurface
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExpensesDashboardScreen(
@@ -30,7 +36,8 @@ fun ExpensesDashboardScreen(
     onAddExpense: () -> Unit,
     onManageCategories: () -> Unit,
     onDeleteExpense: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    showBackButton: Boolean = true
 ) {
     Scaffold(
         topBar = {
@@ -44,8 +51,10 @@ fun ExpensesDashboardScreen(
                     ) 
                 },
                 actions = {
-                    TextButton(onClick = onBack) {
-                        Text("CLOSE", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                    if (showBackButton) {
+                        TextButton(onClick = onBack) {
+                            Text("CLOSE", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -56,9 +65,10 @@ fun ExpensesDashboardScreen(
                 onClick = onAddExpense,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.padding(bottom = 100.dp, end = 16.dp)
             ) {
-                Text("＋", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Icon(Icons.Default.Add, contentDescription = "Add Expense")
             }
         }
     ) { paddingValues ->
@@ -107,7 +117,7 @@ fun ExpensesDashboardScreen(
                         } else {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 80.dp)
+                                contentPadding = PaddingValues(bottom = 120.dp)
                             ) {
                                 state.dailyGroups.forEach { dayGroup ->
                                     stickyHeader {
@@ -148,7 +158,7 @@ fun MonthSelectorLucid(month: Int, year: Int, onPrevious: () -> Unit, onNext: ()
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onPrevious) { 
-            Text("←", fontWeight = FontWeight.Bold, fontSize = 20.sp) 
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Month") 
         }
         Text(
             text = monthName, 
@@ -157,7 +167,7 @@ fun MonthSelectorLucid(month: Int, year: Int, onPrevious: () -> Unit, onNext: ()
             letterSpacing = 1.sp
         )
         IconButton(onClick = onNext) { 
-            Text("→", fontWeight = FontWeight.Bold, fontSize = 20.sp) 
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Month") 
         }
     }
 }
@@ -245,7 +255,11 @@ fun LucidExpenseItem(expense: Expense, currencySymbol: String, onDelete: () -> U
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onDelete) {
-                    Text("×", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = MaterialTheme.colorScheme.error)
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         },
