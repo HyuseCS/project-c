@@ -95,6 +95,9 @@ fun AddReminderScreen(
         allReminders.firstOrNull { it.id == reminderId }
     }
 
+    val isEditMode = reminderId != null
+    val editLoaded = !isEditMode || existingReminder != null
+
     LaunchedEffect(existingReminder?.id) {
         val r = existingReminder ?: return@LaunchedEffect
         title = r.title
@@ -141,7 +144,7 @@ fun AddReminderScreen(
                                 radius = selectedLocation?.radius
                             )
                         },
-                        enabled = uiState !is RemindersUiState.Saving
+                        enabled = editLoaded && uiState !is RemindersUiState.Saving
                     ) {
                         if (uiState is RemindersUiState.Saving) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
@@ -153,6 +156,30 @@ fun AddReminderScreen(
             )
         }
     ) { paddingValues ->
+        if (isEditMode && !editLoaded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    CircularProgressIndicator()
+                    Text(
+                        text = if (allReminders.isEmpty()) {
+                            "Loading reminder..."
+                        } else {
+                            "Reminder not found"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -377,6 +404,7 @@ fun AddReminderScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+        }
         }
     }
 

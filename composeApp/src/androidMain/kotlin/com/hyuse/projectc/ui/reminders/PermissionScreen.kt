@@ -22,8 +22,10 @@ fun PermissionScreen(
 ) {
     val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { _ ->
-        onPermissionsGranted()
+    ) { isGranted ->
+        if (isGranted) {
+            onPermissionsGranted()
+        }
     }
 
     val bgLocationLauncher = rememberLauncherForActivityResult(

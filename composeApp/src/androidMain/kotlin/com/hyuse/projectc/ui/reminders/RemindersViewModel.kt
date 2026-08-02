@@ -82,6 +82,10 @@ class RemindersViewModel(
                 
                 val geofenceId = location?.let { "geo_$id" }
 
+                val lastTriggeredMillis = reminderId?.let {
+                    reminderRepository.getReminderById(it)?.lastTriggeredMillis
+                }
+
                 val reminder = Reminder(
                     id = id,
                     title = title,
@@ -90,6 +94,7 @@ class RemindersViewModel(
                     timeMillis = timeMillis,
                     importance = importance,
                     location = location,
+                    lastTriggeredMillis = lastTriggeredMillis,
                     geofenceId = geofenceId
                 )
 

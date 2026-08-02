@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.repository.GeofenceManager
+import com.hyuse.projectc.domain.repository.GeofenceProximity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.tasks.await
@@ -121,22 +122,26 @@ class GeofenceManagerImpl(private val context: Context) : GeofenceManager {
         latitude: Double,
         longitude: Double,
         radiusMeters: Double
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): GeofenceProximity = withContext(Dispatchers.IO) {
         try {
             val currentLocation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null).await()
             } else {
                 fusedLocationClient.lastLocation.await()
-            } ?: return@withContext false
+            } ?: return@withContext GeofenceProximity.UNAVAILABLE
 
             val target = Location("geofence").apply {
                 this.latitude = latitude
                 this.longitude = longitude
             }
-            currentLocation.distanceTo(target) <= radiusMeters
+            if (currentLocation.distanceTo(target) <= radiusMeters) {
+                GeofenceProximity.INSIDE
+            } else {
+                GeofenceProximity.OUTSIDE
+            }
         } catch (e: Exception) {
             Log.e("GeofenceManager", "Failed to check current location", e)
-            false
+            GeofenceProximity.UNAVAILABLE
         }
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.hyuse.projectc.domain.repository.GeofenceManager
+import com.hyuse.projectc.domain.repository.GeofenceProximity
 import com.hyuse.projectc.domain.repository.ReminderRepository
 import com.hyuse.projectc.domain.usecase.EvaluateTriggerUseCase
 import com.hyuse.projectc.domain.usecase.TriggerAction
@@ -32,13 +33,14 @@ class ReminderTimeWorker(
         // Presence check: only dispatch if the user is still inside the geofence.
         val location = reminder.location
         if (location != null) {
-            val inside = geofenceManager.isUserInsideGeofence(
+            when (geofenceManager.isUserInsideGeofence(
                 location.latitude,
                 location.longitude,
                 location.radius
-            )
-            if (!inside) {
-                return Result.success()
+            )) {
+                GeofenceProximity.OUTSIDE -> return Result.success()
+                GeofenceProximity.UNAVAILABLE -> return Result.retry()
+                GeofenceProximity.INSIDE -> {}
             }
         }
 
