@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.*
@@ -36,6 +37,7 @@ import java.util.Locale
 fun RemindersScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAddReminder: (String) -> Unit, // Changed to take a route string
+    onEditReminder: (String) -> Unit,
     viewModel: RemindersViewModel = koinViewModel(),
     showBackButton: Boolean = true
 ) {
@@ -79,8 +81,12 @@ fun RemindersScreen(
                         context,
                         Manifest.permission.ACCESS_BACKGROUND_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
+                    val hasNotifications = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU || ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
                     
-                    if (hasFineLocation && hasBackgroundLocation) {
+                    if (hasFineLocation && hasBackgroundLocation && hasNotifications) {
                         onNavigateToAddReminder(Routes.ADD_REMINDER)
                     } else {
                         onNavigateToAddReminder(Routes.PERMISSION_SCREEN)
@@ -118,6 +124,7 @@ fun RemindersScreen(
                 items(reminders) { reminder ->
                     ReminderItem(
                         reminder = reminder,
+                        onEdit = { onEditReminder(reminder.id) },
                         onDelete = { viewModel.deleteReminder(reminder.id) }
                     )
                 }
@@ -127,7 +134,7 @@ fun RemindersScreen(
 }
 
 @Composable
-fun ReminderItem(reminder: Reminder, onDelete: () -> Unit) {
+fun ReminderItem(reminder: Reminder, onEdit: () -> Unit, onDelete: () -> Unit) {
     val indicatorColor = when (reminder.importance) {
         ReminderImportance.LOW -> Color.Gray
         ReminderImportance.MEDIUM -> Color(0xFF4CAF50)
@@ -212,6 +219,14 @@ fun ReminderItem(reminder: Reminder, onDelete: () -> Unit) {
             }
         }
         
+        IconButton(onClick = onEdit) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit Reminder",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
         IconButton(onClick = onDelete) {
             Icon(
                 imageVector = Icons.Default.Delete,

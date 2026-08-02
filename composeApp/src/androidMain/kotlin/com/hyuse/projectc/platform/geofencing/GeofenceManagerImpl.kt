@@ -4,20 +4,26 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.os.Build
 import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.hyuse.projectc.domain.model.Reminder
 import com.hyuse.projectc.domain.repository.GeofenceManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.tasks.await
 
 class GeofenceManagerImpl(private val context: Context) : GeofenceManager {
 
     private val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
+    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
@@ -107,6 +113,30 @@ class GeofenceManagerImpl(private val context: Context) : GeofenceManager {
             Log.d("GeofenceManager", "Successfully unregistered all geofences")
         } catch (e: Exception) {
             Log.e("GeofenceManager", "Failed to unregister all geofences", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun isUserInsideGeofence(
+        latitude: Double,
+        longitude: Double,
+        radiusMeters: Double
+    ): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val currentLocation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null).await()
+            } else {
+                fusedLocationClient.lastLocation.await()
+            } ?: return@withContext false
+
+            val target = Location("geofence").apply {
+                this.latitude = latitude
+                this.longitude = longitude
+            }
+            currentLocation.distanceTo(target) <= radiusMeters
+        } catch (e: Exception) {
+            Log.e("GeofenceManager", "Failed to check current location", e)
+            false
         }
     }
 }
