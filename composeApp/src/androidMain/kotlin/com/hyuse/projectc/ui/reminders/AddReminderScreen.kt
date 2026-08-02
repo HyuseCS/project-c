@@ -67,6 +67,7 @@ import kotlin.math.pow
 @Composable
 fun AddReminderScreen(
     onNavigateBack: () -> Unit,
+    reminderId: String? = null,
     viewModel: RemindersViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel()
 ) {
@@ -89,6 +90,26 @@ fun AddReminderScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
+    val allReminders by viewModel.reminders.collectAsState()
+    val existingReminder = remember(allReminders, reminderId) {
+        allReminders.firstOrNull { it.id == reminderId }
+    }
+
+    val isEditMode = reminderId != null
+    val editLoaded = !isEditMode || existingReminder != null
+
+    LaunchedEffect(existingReminder?.id) {
+        val r = existingReminder ?: return@LaunchedEffect
+        title = r.title
+        description = r.description
+        importance = r.importance
+        if (r.timeMillis > 0) {
+            selectedDateMillis = r.dateMillis
+            selectedTimeMillis = r.timeMillis
+        }
+        selectedLocation = r.location
+    }
+
     val datePickerState = rememberDatePickerState()
     val timePickerState = rememberTimePickerState()
 
@@ -102,7 +123,7 @@ fun AddReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("New Reminder", fontWeight = FontWeight.Bold) },
+                title = { Text(if (existingReminder != null) "Edit Reminder" else "New Reminder", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -112,6 +133,7 @@ fun AddReminderScreen(
                     TextButton(
                         onClick = {
                             viewModel.saveReminder(
+                                reminderId = reminderId,
                                 title = title.ifBlank { "Untitled Reminder" },
                                 description = description,
                                 dateMillis = selectedDateMillis ?: System.currentTimeMillis(),
@@ -122,7 +144,7 @@ fun AddReminderScreen(
                                 radius = selectedLocation?.radius
                             )
                         },
-                        enabled = uiState !is RemindersUiState.Saving
+                        enabled = editLoaded && uiState !is RemindersUiState.Saving
                     ) {
                         if (uiState is RemindersUiState.Saving) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
@@ -134,6 +156,30 @@ fun AddReminderScreen(
             )
         }
     ) { paddingValues ->
+        if (isEditMode && !editLoaded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    CircularProgressIndicator()
+                    Text(
+                        text = if (allReminders.isEmpty()) {
+                            "Loading reminder..."
+                        } else {
+                            "Reminder not found"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -358,6 +404,7 @@ fun AddReminderScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+        }
         }
     }
 

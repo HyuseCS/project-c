@@ -52,6 +52,7 @@ class RemindersViewModel(
     val uiState: StateFlow<RemindersUiState> = _uiState.asStateFlow()
 
     fun saveReminder(
+        reminderId: String? = null,
         title: String,
         description: String,
         dateMillis: Long,
@@ -64,29 +65,36 @@ class RemindersViewModel(
         viewModelScope.launch {
             _uiState.value = RemindersUiState.Saving
             try {
-                // Free tier limit validation
-                val todayReminders = reminders.value.filter { isSameDay(it.dateMillis, dateMillis) }
-                if (todayReminders.size >= 3) {
-                    _uiState.value = RemindersUiState.Error("Daily limit of 3 reminders reached.")
-                    return@launch
+                // Free tier limit validation - only enforced on new reminders
+                if (reminderId == null) {
+                    val todayReminders = reminders.value.filter { isSameDay(it.dateMillis, dateMillis) }
+                    if (todayReminders.size >= 3) {
+                        _uiState.value = RemindersUiState.Error("Daily limit of 3 reminders reached.")
+                        return@launch
+                    }
                 }
 
-                val reminderId = UUID.randomUUID().toString()
+                val id = reminderId ?: UUID.randomUUID().toString()
 
                 val location = if (latitude != null && longitude != null && radius != null) {
                     LocationData(latitude, longitude, radius)
                 } else null
                 
-                val geofenceId = location?.let { "geo_$reminderId" }
+                val geofenceId = location?.let { "geo_$id" }
+
+                val lastTriggeredMillis = reminderId?.let {
+                    reminderRepository.getReminderById(it)?.lastTriggeredMillis
+                }
 
                 val reminder = Reminder(
-                    id = reminderId,
+                    id = id,
                     title = title,
                     description = description,
                     dateMillis = dateMillis,
                     timeMillis = timeMillis,
                     importance = importance,
                     location = location,
+                    lastTriggeredMillis = lastTriggeredMillis,
                     geofenceId = geofenceId
                 )
 

@@ -5,8 +5,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.hyuse.projectc.ui.auth.AuthState
 import com.hyuse.projectc.ui.auth.AuthViewModel
 import com.hyuse.projectc.ui.auth.LoginScreen
@@ -47,6 +49,8 @@ object Routes {
     const val MANAGE_CATEGORIES = "manage_categories"
     const val REMINDERS_DASHBOARD = "reminders_dashboard"
     const val ADD_REMINDER = "add_reminder"
+    const val ADD_REMINDER_ROUTE = "add_reminder?reminder_id={reminder_id}"
+    const val REMINDER_ID_ARG = "reminder_id"
     const val PERMISSION_SCREEN = "permission_screen"
 }
 
@@ -416,12 +420,27 @@ fun NavGraph(navController: NavHostController) {
             RemindersScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToAddReminder = { route -> navController.navigate(route) },
+                onEditReminder = { id ->
+                    navController.navigate("${Routes.ADD_REMINDER}?${Routes.REMINDER_ID_ARG}=$id")
+                },
                 showBackButton = false
             )
         }
 
-        composable(Routes.ADD_REMINDER) {
+        composable(
+            route = Routes.ADD_REMINDER_ROUTE,
+            arguments = listOf(
+                navArgument(Routes.REMINDER_ID_ARG) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val reminderId = backStackEntry.arguments
+                ?.getString(Routes.REMINDER_ID_ARG)
+                ?.takeIf { it.isNotEmpty() }
             AddReminderScreen(
+                reminderId = reminderId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

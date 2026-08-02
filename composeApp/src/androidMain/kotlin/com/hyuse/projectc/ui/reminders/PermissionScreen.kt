@@ -20,11 +20,23 @@ fun PermissionScreen(
     onPermissionsGranted: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    val bgLocationLauncher = rememberLauncherForActivityResult(
+    val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             onPermissionsGranted()
+        }
+    }
+
+    val bgLocationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                onPermissionsGranted()
+            }
         }
     }
 
@@ -56,7 +68,7 @@ fun PermissionScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Location Access",
+                    text = "Location & Notifications Access",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 32.sp,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -64,7 +76,7 @@ fun PermissionScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Project C needs background location access to trigger your reminders precisely when you arrive—even if your phone is in your pocket.",
+                    text = "Project C needs background location access to trigger your reminders precisely when you arrive—even if your phone is in your pocket—and notification permission to alert you when a reminder fires.",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -90,7 +102,7 @@ fun PermissionScreen(
                     shape = MaterialTheme.shapes.large
                 ) {
                     Text(
-                        text = "Enable Location",
+                        text = "Enable Permissions",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary
