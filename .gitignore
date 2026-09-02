@@ -33,3 +33,8 @@ phase6_expenses_plan.md
 GEMINI.md
 # Agent harness hook runtime logs
 .claude/hooks/.logs/
+
+# Release signing (never commit)
+*.jks
+*.keystore
+keystore.properties
