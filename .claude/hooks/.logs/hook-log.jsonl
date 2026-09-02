@@ -1,0 +1,11 @@
+{"ts":"2026-09-02T14:14:42.832Z","hook":"session-init","event":"SessionStart","tool":"","target":"","note":"unknown","dur":17,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.506Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.528Z","hook":"scout-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.551Z","hook":"session-state","event":"unknown","tool":"","target":"","note":"skipped-no-session","dur":0,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.575Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.595Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Read","target":"","note":"non-edit-tool","dur":0,"status":"skip","exit":0,"error":""}
+{"ts":"2026-09-02T14:14:50.644Z","hook":"subagent-init","event":"SubagentStart","tool":"","target":"unknown","note":"context-injected","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:16:19.753Z","hook":"session-init","event":"SessionStart","tool":"","target":"","note":"startup","dur":20,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:16:36.308Z","hook":"session-init","event":"SessionStart","tool":"","target":"","note":"resume","dur":27,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:17:39.819Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-09-02T14:17:39.823Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
