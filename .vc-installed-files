@@ -19,7 +19,6 @@ AGENTS.md
 .claude/hooks/lib/config-counter.cjs
 .claude/hooks/lib/context-builder.cjs
 .claude/hooks/lib/git-info-cache.cjs
-.claude/hooks/lib/hook-logger.cjs
 .claude/hooks/lib/privacy-checker.cjs
 .claude/hooks/lib/project-detector.cjs
 .claude/hooks/lib/scout-checker.cjs

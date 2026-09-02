@@ -31,3 +31,5 @@ memory.md
 completed_phases_plan.md
 phase6_expenses_plan.md
 GEMINI.md
+# Agent harness hook runtime logs
+.claude/hooks/.logs/
