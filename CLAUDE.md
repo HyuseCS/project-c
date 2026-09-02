@@ -1,5 +1,41 @@
 # CLAUDE.md
 
+## Harness Activation — DORMANT BY DEFAULT
+
+**This section overrides every auto-routing rule in this file.**
+
+The RIPER-5 harness is **dormant**. Do not enter it unless the user names it. Work normally —
+answer, edit, debug, build — exactly as if this file described a system that is switched off.
+
+**Wake it only on an explicit signal from the user:**
+
+- a mode command: `ENTER RESEARCH MODE`, `ENTER SPEC MODE`, `ENTER PLAN MODE`,
+  `ENTER VALIDATE MODE`, `ENTER EXECUTE MODE`, `ENTER FAST MODE`, `ENTER QUICK FIX MODE`,
+  `ENTER UPDATE PROCESS MODE`
+- naming the system: "RIPER-5", "riper5", "vc-harness", "vc-riper5", "the harness"
+- naming a `vc-*` agent or skill directly (e.g. "use vc-plan-agent", "run vc-audit-context")
+- an autopilot trigger: "autopilot", "autopilot quick:", "autopilot fast:", "autopilot full:"
+- resuming a plan the user points at in `process/general-plans/active/` or
+  `process/features/*/active/`
+
+**While dormant:**
+
+- Do NOT prefix responses with `[MODE: ...]`.
+- Do NOT auto-route a feature request into RESEARCH → SPEC → INNOVATE → PLAN → VALIDATE.
+- Do NOT spawn `vc-*` subagents.
+- Do NOT create plan files, SPEC files, or validate-contracts.
+- Do NOT offer, suggest, or nudge toward the harness. The user knows it is here.
+
+**Once woken**, every rule in the rest of this file applies in full for that piece of work —
+phase locking, no inline execution, the approval gates, the artifacts. Half-running the harness
+is worse than not running it. Dormancy ends when the work the user named it for is finished, or
+when the user says to stop.
+
+**Not covered by dormancy:** the `## Before Any Substantial Task` context reads below. Reading
+`process/context/` for repo knowledge is always allowed and costs nothing.
+
+---
+
 ## Bootstrap Guard
 
 **If `process/context/all-context.md` does not exist**, the harness has not been set up yet. (Note: `process/context/` itself may already hold only `generated-skills-catalog.json` from install — that alone does NOT count as set up.) Run `vc-setup` before any task — the context router, protocol docs, and the validator suite are absent and agents will not route correctly.
